@@ -1,0 +1,254 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+{% endblock page_title %}
+
+{% block custom_css %}
+<style>
+  .course-card {
+    transition: all 0.3s ease;
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  
+  .course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .btn-add-course {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-add-course:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .btn-add-course i {
+    margin-right: 8px;
+  }
+  
+  .table th {
+    background-color: rgba(0, 59, 124, 0.05);
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+  
+  .action-buttons .btn {
+    margin-right: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .action-buttons .btn i {
+    margin-right: 5px;
+  }
+  
+  .action-buttons .btn-edit {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: white;
+  }
+  
+  .action-buttons .btn-delete {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--secondary-color);
+  }
+  
+  .page-header h1 {
+    margin-bottom: 0;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+  
+  .course-count {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .search-wrapper {
+    position: relative;
+    max-width: 300px;
+  }
+  
+  .search-wrapper .form-control {
+    padding-left: 2.5rem;
+    border-radius: 30px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .search-wrapper .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+  }
+  
+  .no-courses {
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+  }
+  
+  .no-courses i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    opacity: 0.5;
+  }
+  
+  .table-container {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  
+  .card-title-custom {
+    display: flex;
+    align-items: center;
+  }
+  
+  .card-title-custom i {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+  }
+</style>
+{% endblock custom_css %}
+
+{% block main_content %}
+<!-- Main content -->
+<section class="content fade-in">
+  <div class="container-fluid">
+    <div class="page-header">
+      <h1><i class="fas fa-graduation-cap"></i> Manage Courses</h1>
+      <a href="{% url 'add_course' %}" class="btn btn-primary btn-add-course">
+        <i class="fas fa-plus-circle"></i> Add New Course
+      </a>
+    </div>
+
+    <div class="card course-card">
+      <div class="card-header">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <div class="card-title-custom">
+              <i class="fas fa-list-alt"></i>
+              <h3 class="card-title">Course List</h3>
+            </div>
+            <p class="course-count text-muted mt-2">Total Courses: {{ courses|length }}</p>
+          </div>
+          <div class="col-md-6">
+            <div class="search-wrapper float-md-right">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="courseSearch" class="form-control" placeholder="Search courses...">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body p-0">
+        {% if courses %}
+        <div class="table-container">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th width="10%">ID</th>
+                <th width="60%">Course Name</th>
+                <th width="30%">Action</th>
+              </tr>
+            </thead>
+            <tbody id="courseTableBody">
+              {% for course in courses %}
+              <tr class="course-row">
+                <td>{{ course.id }}</td>
+                <td>{{ course.course_name }}</td>
+                <td>
+                  <div class="action-buttons">
+                    <a href="{% url 'edit_course' course.id %}" class="btn btn-edit">
+                      <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{% url 'delete_course' course.id %}" class="btn btn-delete" onclick="return confirmDelete('{{ course.course_name }}')">
+                      <i class="fas fa-trash-alt"></i> Delete
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="no-courses">
+          <i class="fas fa-graduation-cap"></i>
+          <h4>No courses found</h4>
+          <p>Get started by adding your first course!</p>
+          <a href="{% url 'add_course' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-plus-circle"></i> Add Course
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+  </div>
+</section>
+<!-- /.content -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('courseSearch');
+    const tableBody = document.getElementById('courseTableBody');
+    const rows = tableBody ? tableBody.querySelectorAll('.course-row') : [];
+    
+    if (searchInput) {
+      searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        rows.forEach(row => {
+          const courseName = row.cells[1].textContent.toLowerCase();
+          
+          if (courseName.includes(searchTerm)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+    
+    // Add animation to rows
+    rows.forEach((row, index) => {
+      row.style.animation = `fadeIn 0.3s ease-in-out ${index * 0.05}s forwards`;
+      row.style.opacity = '0';
+    });
+  });
+  
+  // Confirmation before delete
+  function confirmDelete(courseName) {
+    return confirm('Are you sure you want to delete the course "' + courseName + '"? This action cannot be undone.');
+  }
+</script>
+{% endblock main_content %}
+

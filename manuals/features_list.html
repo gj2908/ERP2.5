@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SMS 2.5 Features List</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SMS 2.5 Features List</h1>
+</header>
+<h1 id="student-management-system-sms-2.5">Student Management System
+(SMS 2.5)</h1>
+<h1 id="features-list">Features List</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#adminhod-features">Admin/HOD Features</a></li>
+<li><a href="#staff-features">Staff Features</a></li>
+<li><a href="#student-features">Student Features</a></li>
+<li><a href="#system-wide-features">System-wide Features</a></li>
+</ol>
+<hr />
+<h2 id="adminhod-features">Admin/HOD Features</h2>
+<p>The Admin/HOD role has the highest level of access and control in the
+system. Below is a comprehensive list of features available to
+administrators:</p>
+<h3 id="user-management">User Management</h3>
+<ol type="1">
+<li><strong>Admin Account Management</strong>
+<ul>
+<li>Create new admin accounts</li>
+<li>Enable/disable admin signup feature</li>
+<li>Manage admin profiles</li>
+</ul></li>
+<li><strong>Staff Management</strong>
+<ul>
+<li>Add individual staff members</li>
+<li>Edit staff information (name, email, address, employee ID)</li>
+<li>Delete staff accounts</li>
+<li>Bulk upload staff via CSV</li>
+<li>Assign subjects to staff</li>
+<li>View staff profiles</li>
+</ul></li>
+<li><strong>Student Management</strong>
+<ul>
+<li>Add individual students</li>
+<li>Edit student information (name, email, address, profile
+picture)</li>
+<li>Delete student accounts</li>
+<li>Bulk upload students via CSV</li>
+<li>Assign students to classes</li>
+<li>Generate and manage student registration numbers</li>
+<li>View student profiles</li>
+</ul></li>
+</ol>
+<h3 id="academic-management">Academic Management</h3>
+<ol start="4" type="1">
+<li><strong>Course Management</strong>
+<ul>
+<li>Create new courses</li>
+<li>Edit course details</li>
+<li>Delete courses</li>
+<li>View all courses in a tabular format</li>
+</ul></li>
+<li><strong>Session Management</strong>
+<ul>
+<li>Create academic sessions (yearly)</li>
+<li>Edit session details</li>
+<li>Delete sessions</li>
+<li>View all sessions in a tabular format</li>
+</ul></li>
+<li><strong>Course-Session Management</strong>
+<ul>
+<li>Assign courses to academic sessions</li>
+<li>Manage course-session combinations</li>
+<li>View all course-sessions in a tabular format</li>
+</ul></li>
+<li><strong>Subject Management</strong>
+<ul>
+<li>Create new subjects</li>
+<li>Assign subjects to course-sessions</li>
+<li>Edit subject details</li>
+<li>Delete subjects</li>
+<li>View all subjects in a tabular format</li>
+</ul></li>
+<li><strong>Class Management</strong>
+<ul>
+<li>Create classes with sections</li>
+<li>Assign subjects to classes</li>
+<li>Assign staff to class subjects</li>
+<li>Add students to classes</li>
+<li>Generate class joining links</li>
+<li>Delete classes</li>
+<li>View all classes in a tabular format</li>
+</ul></li>
+</ol>
+<h3 id="monitoring-communication">Monitoring &amp; Communication</h3>
+<ol start="9" type="1">
+<li><strong>Attendance Management</strong>
+<ul>
+<li>View attendance records</li>
+<li>Filter attendance by class, subject, and date</li>
+<li>Export attendance data as Excel or PDF</li>
+</ul></li>
+<li><strong>Leave Management</strong>
+<ul>
+<li>Approve/reject student leave requests</li>
+<li>Approve/reject staff leave requests</li>
+<li>View leave history</li>
+<li>Filter leave requests by status</li>
+</ul></li>
+<li><strong>Feedback Management</strong>
+<ul>
+<li>View student feedback</li>
+<li>View staff feedback</li>
+<li>Respond to feedback</li>
+<li>Filter feedback by status</li>
+<li>View feedback history</li>
+</ul></li>
+<li><strong>Notification System</strong>
+<ul>
+<li>Send notifications to staff</li>
+<li>Send notifications to students</li>
+<li>View sent notifications</li>
+</ul></li>
+</ol>
+<h3 id="system-administration">System Administration</h3>
+<ol start="13" type="1">
+<li><strong>Environment Settings</strong>
+<ul>
+<li>Configure email settings (SMTP server, credentials)</li>
+<li>Toggle debug mode</li>
+<li>Set domain name</li>
+<li>View system configuration</li>
+</ul></li>
+<li><strong>User Authentication Settings</strong>
+<ul>
+<li>Enable/disable admin signup</li>
+<li>Enable/disable staff signup</li>
+<li>Enable/disable student signup</li>
+<li>Manage signup links</li>
+</ul></li>
+<li><strong>Dashboard &amp; Analytics</strong>
+<ul>
+<li>View system overview statistics</li>
+<li>Real-time counts of users, courses, subjects</li>
+<li>Recent activity logs</li>
+<li>Quick access to key functions</li>
+</ul></li>
+</ol>
+<h3 id="file-management">File Management</h3>
+<ol start="16" type="1">
+<li><strong>Document Management</strong>
+<ul>
+<li>Upload and manage files</li>
+<li>Download templates for bulk uploads</li>
+<li>Import data from CSV/Excel files</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="staff-features">Staff Features</h2>
+<p>Staff members have access to features for managing classes, recording
+attendance, and evaluating students:</p>
+<h3 id="profile-management">Profile Management</h3>
+<ol type="1">
+<li><strong>Personal Profile</strong>
+<ul>
+<li>View profile information</li>
+<li>Update personal information</li>
+<li>Change password</li>
+</ul></li>
+</ol>
+<h3 id="academic-management-1">Academic Management</h3>
+<ol start="2" type="1">
+<li><strong>Subject Management</strong>
+<ul>
+<li>View assigned subjects</li>
+<li>Manage subject materials</li>
+</ul></li>
+<li><strong>Class Management</strong>
+<ul>
+<li>View assigned classes</li>
+<li>Start online classes</li>
+<li>Generate class joining links</li>
+<li>Manage active classes</li>
+<li>Clear completed classes</li>
+</ul></li>
+<li><strong>Attendance Management</strong>
+<ul>
+<li>Take daily attendance</li>
+<li>Update existing attendance records</li>
+<li>View attendance history</li>
+<li>Export attendance reports (Excel/PDF)</li>
+<li>Email attendance reports to administration</li>
+</ul></li>
+<li><strong>Student Assessment</strong>
+<ul>
+<li>Add student results</li>
+<li>Update student results</li>
+<li>View result history</li>
+<li>Analyze student performance</li>
+</ul></li>
+</ol>
+<h3 id="communication">Communication</h3>
+<ol start="6" type="1">
+<li><strong>Feedback System</strong>
+<ul>
+<li>Submit feedback to administration</li>
+<li>View feedback responses</li>
+<li>Track feedback history</li>
+</ul></li>
+<li><strong>Leave Management</strong>
+<ul>
+<li>Apply for leave</li>
+<li>View leave status</li>
+<li>Track leave history</li>
+</ul></li>
+<li><strong>Online Classroom</strong>
+<ul>
+<li>Start live classes</li>
+<li>Share screen during classes</li>
+<li>Interact with students</li>
+<li>End classes</li>
+<li>Monitor student attendance in real-time</li>
+<li>Export class attendance</li>
+</ul></li>
+<li><strong>Dashboard</strong>
+<ul>
+<li>View quick statistics</li>
+<li>See recent activities</li>
+<li>Access notifications</li>
+<li>Quick navigation to key features</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="student-features">Student Features</h2>
+<p>Students have access to features for viewing their academic
+information, participating in classes, and communicating with staff:</p>
+<h3 id="profile-management-1">Profile Management</h3>
+<ol type="1">
+<li><strong>Personal Profile</strong>
+<ul>
+<li>View profile information</li>
+<li>Update personal details</li>
+<li>Change password</li>
+</ul></li>
+</ol>
+<h3 id="academic-tracking">Academic Tracking</h3>
+<ol start="2" type="1">
+<li><strong>Attendance Tracking</strong>
+<ul>
+<li>View personal attendance records</li>
+<li>Filter attendance by subject and date</li>
+<li>Track attendance percentage</li>
+</ul></li>
+<li><strong>Performance Tracking</strong>
+<ul>
+<li>View exam and assignment results</li>
+<li>Track academic performance</li>
+<li>View subject-wise scores</li>
+</ul></li>
+</ol>
+<h3 id="class-participation">Class Participation</h3>
+<ol start="4" type="1">
+<li><strong>Online Classes</strong>
+<ul>
+<li>Join live classes using class codes</li>
+<li>Interact with teachers</li>
+<li>View class schedules</li>
+<li>Track attended classes</li>
+</ul></li>
+<li><strong>Communication</strong>
+<ul>
+<li>Submit feedback to administration</li>
+<li>View feedback responses</li>
+<li>Apply for leave</li>
+<li>Check leave request status</li>
+<li>Receive notifications</li>
+</ul></li>
+<li><strong>Dashboard</strong>
+<ul>
+<li>View course and class information</li>
+<li>See attendance statistics</li>
+<li>Access quick links to features</li>
+<li>View important notifications</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="system-wide-features">System-wide Features</h2>
+<p>These features are available across the platform for all user
+roles:</p>
+<h3 id="authentication-security">Authentication &amp; Security</h3>
+<ol type="1">
+<li><strong>User Authentication</strong>
+<ul>
+<li>Secure login with email and password</li>
+<li>Password recovery via email</li>
+<li>Password change functionality</li>
+<li>CAPTCHA protection</li>
+<li>Session management</li>
+<li>Automatic logout after inactivity</li>
+</ul></li>
+<li><strong>Security Features</strong>
+<ul>
+<li>Encrypted passwords</li>
+<li>Protection against common web attacks</li>
+<li>Role-based access control</li>
+<li>Session timeout settings</li>
+<li>Debug mode control for production environment</li>
+</ul></li>
+</ol>
+<h3 id="user-interface">User Interface</h3>
+<ol start="3" type="1">
+<li><strong>Responsive Design</strong>
+<ul>
+<li>Mobile-friendly interface</li>
+<li>Adapts to different screen sizes</li>
+<li>Consistent experience across devices</li>
+</ul></li>
+<li><strong>Dashboard</strong>
+<ul>
+<li>Role-specific dashboards</li>
+<li>Quick access to frequently used features</li>
+<li>Real-time statistics and notifications</li>
+</ul></li>
+<li><strong>Notification System</strong>
+<ul>
+<li>In-app notifications</li>
+<li>Email notifications for important events</li>
+<li>Notification history</li>
+</ul></li>
+</ol>
+<h3 id="data-management">Data Management</h3>
+<ol start="6" type="1">
+<li><strong>Backup &amp; Recovery</strong>
+<ul>
+<li>Database backup functionality</li>
+<li>Data restoration capabilities</li>
+<li>Data integrity checks</li>
+</ul></li>
+<li><strong>Reporting</strong>
+<ul>
+<li>Generate various reports</li>
+<li>Export data in multiple formats (Excel, PDF)</li>
+<li>Filter and search capabilities</li>
+</ul></li>
+</ol>
+<hr />
+<p>The Student Management System (SMS 2.5) is designed to streamline
+administrative tasks, enhance communication between stakeholders, and
+provide a comprehensive platform for educational institutions. The
+features are continuously evolving to meet the changing needs of modern
+education.</p>
+<hr />
+<p>© 2025 SRMIST Student Management System. All rights reserved.</p>
+</body>
+</html>

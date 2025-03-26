@@ -1,0 +1,11 @@
+{% load static %}
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Enter the sum" name="captcha_answer" required>
+    <input type="hidden" name="captcha_num1" value="{{ captcha_num1 }}">
+    <input type="hidden" name="captcha_num2" value="{{ captcha_num2 }}">
+    <div class="input-group-append">
+        <div class="input-group-text">
+            <span>{{ captcha_num1 }} + {{ captcha_num2 }} = ?</span>
+        </div>
+    </div>
+</div> 

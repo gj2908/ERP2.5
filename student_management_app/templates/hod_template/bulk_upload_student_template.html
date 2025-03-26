@@ -1,0 +1,176 @@
+{% extends 'hod_template/base_template.html' %}
+{% load static %}
+{% block page_title %}
+{% endblock page_title %}
+{% block main_content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Bulk Upload Students</h3>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body">
+                        {% if messages %}
+                        <div class="alert alert-danger">
+                            {% for message in messages %}
+                            {{ message|safe }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Blue instructions box -->
+                        <div class="alert alert-info" style="background-color: #f0f7fd; border-color: #d0e3f0;">
+                            <h5><i class="icon fas fa-info"></i> Instructions for Bulk Upload:</h5>
+                            <ol>
+                                <li>Download the sample Excel file below</li>
+                                <li>Fill in the data following the format in the sample file</li>
+                                <li>Required columns: first_name, last_name, email, address, gender, registration_number, parents_email</li>
+                                <li>For gender, use either 'Male' or 'Female'</li>
+                                <li>Email addresses must be unique</li>
+                                <li>Registration numbers must be unique</li>
+                                <li>Passwords will be automatically generated and sent to students via email</li>
+                                <li><strong>Important: </strong>All students will be assigned to the Course and Session Year selected below</li>
+                                <li>You can upload up to 1000 students at once</li>
+                            </ol>
+                        </div>
+                        
+                        <!-- Download Sample Button -->
+                        <div class="text-center mb-4">
+                            <a href="{% url 'download_sample' 'student' %}" class="btn btn-success btn-lg">
+                                <i class="fas fa-download"></i> Download Sample Excel File
+                            </a>
+                        </div>
+                        
+                        <form action="{% url 'bulk_upload_student_save' %}" method="post" enctype="multipart/form-data" id="bulkUploadForm">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Course <span class="text-danger">*</span></label>
+                                <select name="course" id="id_course" class="form-control select2" required>
+                                    <option value="">Select Course</option>
+                                    {% for id, name in form.fields.course.choices %}
+                                    {% if id %}
+                                    <option value="{{ id }}">{{ name }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Session Year <span class="text-danger">*</span></label>
+                                <select name="session_year_id" id="id_session_year_id" class="form-control select2" required>
+                                    <option value="">Select Session Year</option>
+                                    {% for id, name in form.fields.session_year_id.choices %}
+                                    {% if id %}
+                                    <option value="{{ id }}">{{ name }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Upload File <span class="text-danger">*</span></label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="file" name="file" accept=".xlsx,.xls" required>
+                                    <label class="custom-file-label" for="file">Choose file</label>
+                                </div>
+                                <small class="form-text text-muted">Please upload an Excel file (.xlsx, .xls). The system will process the file in batches.</small>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                                    <i class="fas fa-upload"></i> Upload Students
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <!-- Progress Bar -->
+                        <div id="progressContainer" style="display: none;">
+                            <div class="progress mb-3">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-center" id="progressText">Processing records... 0%</p>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$(document).ready(function () {
+    // Initialize select2
+    $('.select2').select2({
+        width: '100%',
+        theme: 'bootstrap4'
+    });
+    
+    // Show selected filename in the custom file input
+    $(".custom-file-input").on("change", function() {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+    
+    // Form validation and submission
+    $("#bulkUploadForm").on("submit", function(e) {
+        var courseVal = $("#id_course").val();
+        var sessionYearVal = $("#id_session_year_id").val();
+        var fileVal = $("#file").val();
+        
+        // Validate course selection
+        if (!courseVal || courseVal === "") {
+            e.preventDefault();
+            alert("Please select a Course");
+            return false;
+        }
+        
+        // Validate session year selection
+        if (!sessionYearVal || sessionYearVal === "") {
+            e.preventDefault();
+            alert("Please select a Session Year");
+            return false;
+        }
+        
+        // Validate file upload
+        if (!fileVal) {
+            e.preventDefault();
+            alert("Please select a file to upload");
+            return false;
+        }
+        
+        // Check file extension
+        if(fileVal) {
+            var extension = fileVal.split('.').pop().toLowerCase();
+            if($.inArray(extension, ['xlsx', 'xls']) == -1) {
+                e.preventDefault();
+                alert('Please upload a valid Excel file (.xlsx or .xls)');
+                return false;
+            }
+        }
+        
+        // Show progress bar and disable submit button
+        $("#progressContainer").show();
+        $("#submitBtn").prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        
+        // Simulate progress updates (since we can't get real-time updates from the server)
+        var progress = 0;
+        var progressInterval = setInterval(function() {
+            progress += 5;
+            if (progress <= 95) {
+                $(".progress-bar").css("width", progress + "%");
+                $("#progressText").text("Processing records... " + progress + "%");
+            }
+        }, 1000);
+        
+        // Store interval ID in form data for cleanup
+        $(this).data('progressInterval', progressInterval);
+        
+        return true;
+    });
+});
+</script>
+{% endblock main_content %} 

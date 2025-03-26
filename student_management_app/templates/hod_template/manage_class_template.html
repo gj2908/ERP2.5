@@ -1,0 +1,743 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Manage Class
+{% endblock page_title %}
+{% block main_content %}
+    {% csrf_token %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Class List</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addClass">
+                        Add Class
+                      </button>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Session</th>
+                          <th>Course</th>
+                          <th>Section</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for class in classes %}
+                        <tr>
+                          <td></td>
+                          <td>{{ class.course_session.session_year.start_year }} - {{ class.course_session.session_year.end_year }}</td>
+                          <td>{{ class.course_session.course.course_name }}</td>
+                          <td>{{ class.section }}</td>
+                          <td>
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewStudents({{ class.id }})" data-toggle="tooltip" title="View Students">
+                                <i class="fas fa-users"></i>
+                              </button>
+                              <button type="button" class="btn btn-sm btn-outline-success" onclick="assignSubjects({{ class.id }})" data-toggle="tooltip" title="Assign Subjects">
+                                <i class="fas fa-book"></i>
+                              </button>
+                              <button type="button" class="btn btn-sm btn-outline-info" onclick="addStudents({{ class.id }})" data-toggle="tooltip" title="Add Students">
+                                <i class="fas fa-user-plus"></i>
+                              </button>
+                              <a href="{% url 'delete_class' class.id %}" class="btn btn-sm btn-outline-danger" 
+                                data-toggle="tooltip" title="Delete Class"
+                                onclick="return confirm('Are you sure you want to delete this class? This will remove all student assignments.')">
+                                  <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+          </div>
+      </div>
+    </section>
+
+    <!-- Add Class Modal -->
+    <div class="modal fade" id="addClass" tabindex="-1" role="dialog" aria-labelledby="addClassLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addClassLabel">Add Class</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="{% url 'add_class_save' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Session Year</label>
+                <select class="form-control" name="session" required>
+                  <option value="">Select Session Year</option>
+                  {% for session in sessions %}
+                    <option value="{{ session.id }}">{{ session.start_year }} - {{ session.end_year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Course</label>
+                <select class="form-control" name="course" required>
+                  <option value="">Select Course</option>
+                  {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.course_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Section</label>
+                <input type="text" class="form-control" name="section" placeholder="Enter Section" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Add Class</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assign Subjects Modal -->
+    <div class="modal fade" id="assignSubjectsModal" tabindex="-1" role="dialog" aria-labelledby="assignSubjectsLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="assignSubjectsLabel">Manage Class Subjects</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Current Staff</th>
+                    <th>Assign/Change Staff</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="availableSubjectsList">
+                  <!-- Subjects will be loaded here dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Students Modal -->
+    <div class="modal fade" id="viewStudentsModal" tabindex="-1" role="dialog" aria-labelledby="viewStudentsLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewStudentsLabel">Class Students</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <div class="btn-group">
+                <button type="button" class="btn btn-success" onclick="exportStudents('xlsx')">
+                  <i class="fas fa-file-excel"></i> Export as Excel
+                </button>
+                <button type="button" class="btn btn-danger" onclick="exportStudents('pdf')">
+                  <i class="fas fa-file-pdf"></i> Export as PDF
+                </button>
+              </div>
+              <button type="button" class="btn btn-danger float-right" onclick="removeAllStudents()">
+                <i class="fas fa-trash"></i> Remove All Students
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" id="classStudentsTable">
+                <thead>
+                  <tr>
+                    <th>Registration Number</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Address</th>
+                    <th>Parents Email</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="classStudentsList">
+                  <!-- Students will be loaded here dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Students Modal -->
+    <div class="modal fade" id="addStudentsModal" tabindex="-1" role="dialog" aria-labelledby="addStudentsLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addStudentsLabel">Add Students to Class</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#selectStudents">Select Students</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#regRange">Registration Range</a>
+              </li>
+            </ul>
+            <div class="tab-content mt-3">
+              <div id="selectStudents" class="tab-pane active">
+                <div class="form-group">
+                  <label>Select Students</label>
+                  <select class="form-control select2" multiple="multiple" id="studentSelect">
+                    <!-- Available students will be loaded here dynamically -->
+                  </select>
+                </div>
+              </div>
+              <div id="regRange" class="tab-pane fade">
+                <div class="form-group">
+                  <label>Registration Number Range</label>
+                  <div class="row">
+                    <div class="col-md-5">
+                      <input type="text" class="form-control" id="regStart" placeholder="Start Range">
+                    </div>
+                    <div class="col-md-5">
+                      <input type="text" class="form-control" id="regEnd" placeholder="End Range">
+                    </div>
+                    <div class="col-md-2">
+                      <button type="button" class="btn btn-primary" onclick="findStudentsByRange()">Find</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group mt-3">
+                  <label>Found Students</label>
+                  <select class="form-control select2" multiple="multiple" id="rangeStudentSelect">
+                    <!-- Students found by range will be loaded here -->
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="saveStudents()">Add Students</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+let currentClassId = null;
+
+function assignSubjects(classId) {
+    currentClassId = classId;
+    loadAvailableSubjects(classId);
+    $("#assignSubjectsModal").modal("show");
+}
+
+function loadAvailableSubjects(classId) {
+    $.ajax({
+        url: "/get_subjects_by_class/",
+        type: "POST",
+        data: {
+            class_id: classId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            let subjectsList = $("#availableSubjectsList");
+            subjectsList.empty();
+            
+            if (!response.subjects || response.subjects.length === 0) {
+                subjectsList.html('<tr><td colspan="4" class="text-center">No subjects available for this class</td></tr>');
+                return;
+            }
+            
+            response.subjects.forEach(function(subject) {
+                let staffSelect = '<select class="form-control staff-select" data-subject-id="' + subject.id + '"' + 
+                    (subject.is_assigned ? ' data-class-subject-id="' + subject.class_subject_id + '"' : '') + '>' +
+                    '<option value="">Select Staff</option>' +
+                    '{% for staff in staffs %}' +
+                    '<option value="{{ staff.id }}"' + 
+                    '>' +
+                    '{{ staff.admin.first_name }} {{ staff.admin.last_name }}' +
+                    '</option>' +
+                    '{% endfor %}' +
+                    '</select>';
+
+                let actionButtons = subject.is_assigned ? 
+                    '<button class="btn btn-primary btn-sm" onclick="updateStaffAssignment(' + subject.class_subject_id + ')">Update</button> ' +
+                    '<button class="btn btn-danger btn-sm" onclick="removeSubjectAssignment(' + subject.class_subject_id + ')">Remove</button>' :
+                    '<button class="btn btn-success btn-sm" onclick="assignStaffToSubject(' + subject.id + ')">Assign</button>';
+
+                let row = '<tr>' +
+                    '<td>' + subject.subject_name + '</td>' +
+                    '<td>' + (subject.staff_name || 'No Staff Assigned') + '</td>' +
+                    '<td>' + staffSelect + '</td>' +
+                    '<td>' + actionButtons + '</td>' +
+                    '</tr>';
+                subjectsList.append(row);
+                
+                // Set the selected staff member if one is assigned
+                if (subject.staff_id) {
+                    $(`.staff-select[data-subject-id="${subject.id}"]`).val(subject.staff_id);
+                }
+            });
+        },
+        error: function(xhr) {
+            let errorMessage = "Error loading subjects";
+            
+            try {
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage += ": " + xhr.responseJSON.error;
+                }
+            } catch(e) {
+                console.error("Error parsing error response:", e);
+            }
+            
+            alert(errorMessage);
+        }
+    });
+}
+
+function updateStaffAssignment(classSubjectId) {
+    let staffId = $(`.staff-select[data-class-subject-id="${classSubjectId}"]`).val();
+    if (!staffId) {
+        alert("Please select a staff member");
+        return;
+    }
+
+    $.ajax({
+        url: "/update_subject_staff/",
+        type: "POST",
+        data: {
+            class_subject_id: classSubjectId,
+            staff_id: staffId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            alert("Staff assignment updated successfully");
+            loadAvailableSubjects(currentClassId);
+        },
+        error: function(xhr) {
+            alert("Error updating staff assignment: " + xhr.responseJSON.error);
+        }
+    });
+}
+
+function removeSubjectAssignment(classSubjectId) {
+    if (!confirm("Are you sure you want to remove this subject assignment?")) {
+        return;
+    }
+
+    $.ajax({
+        url: "/remove_subject_from_class/",
+        type: "POST",
+        data: {
+            class_subject_id: classSubjectId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            alert("Subject assignment removed successfully");
+            loadAvailableSubjects(currentClassId);
+        },
+        error: function(xhr) {
+            alert("Error removing subject assignment: " + xhr.responseJSON.error);
+        }
+    });
+}
+
+function assignStaffToSubject(subjectId) {
+    let staffId = $(`.staff-select[data-subject-id="${subjectId}"]`).val();
+    if (!staffId) {
+        alert("Please select a staff member");
+        return;
+    }
+
+    $.ajax({
+        url: "/assign_subject_to_class/",
+        type: "POST",
+        data: {
+            class_id: currentClassId,
+            subject_id: subjectId,
+            staff_id: staffId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            alert("Subject assigned successfully");
+            loadAvailableSubjects(currentClassId);
+        },
+        error: function(xhr) {
+            alert("Error assigning subject: " + xhr.responseJSON.error);
+        }
+    });
+}
+
+function viewStudents(classId) {
+    console.log('[DEBUG] viewStudents called with classId:', classId);
+    if (!classId) {
+        console.error('[DEBUG] No class ID provided');
+        return;
+    }
+    currentClassId = classId;
+    loadClassStudents(classId);
+    $("#viewStudentsModal").modal("show");
+}
+
+function loadClassStudents(classId) {
+    $.ajax({
+        url: "/get_class_students/",
+        type: "POST",
+        data: {
+            class_id: classId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            let studentsList = $("#classStudentsList");
+            studentsList.empty();
+            
+            if (!response.students || response.students.length === 0) {
+                studentsList.html('<tr><td colspan="7" class="text-center">No students in this class</td></tr>');
+                return;
+            }
+            
+            response.students.forEach(function(student) {
+                studentsList.append(`
+                    <tr>
+                        <td>${student.registration_number}</td>
+                        <td>${student.name}</td>
+                        <td>${student.email}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.address}</td>
+                        <td>${student.parents_email}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="removeStudentFromClass(${student.id})">
+                                <i class="fas fa-user-minus"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        },
+        error: function(xhr) {
+            alert("Error loading students: " + xhr.responseJSON.error);
+        }
+    });
+}
+
+function removeAllStudents() {
+    if (!currentClassId) {
+        alert("No class selected");
+        return;
+    }
+
+    if (!confirm("Are you sure you want to remove ALL students from this class? This action cannot be undone.")) {
+        return;
+    }
+
+    // Show loading message in the table
+    $("#classStudentsList").html('<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Removing all students...</td></tr>');
+
+    $.ajax({
+        url: "/remove_all_students_from_class/",
+        type: "POST",
+        data: {
+            class_id: currentClassId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            if (response.success) {
+                alert("All students have been removed from the class successfully!");
+                loadClassStudents(currentClassId);
+            } else {
+                alert("Error: " + (response.error || "Failed to remove all students"));
+                loadClassStudents(currentClassId);
+            }
+        },
+        error: function(xhr) {
+            alert("Error removing students: " + (xhr.responseJSON?.error || "Unknown error occurred"));
+            loadClassStudents(currentClassId);
+        }
+    });
+}
+
+function exportStudents(format) {
+    if (!currentClassId) {
+        alert("No class selected");
+        return;
+    }
+
+    let url = format === 'xlsx' ? 
+        `/export_class_students_excel/${currentClassId}/` : 
+        `/export_class_students_pdf/${currentClassId}/`;
+    
+    // Show loading message
+    let loadingMsg = format === 'xlsx' ? 'Generating Excel file...' : 'Generating PDF file...';
+    let originalContent = $("#classStudentsList").html();
+    $("#classStudentsList").html(`<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> ${loadingMsg}</td></tr>`);
+
+    // Create a temporary form to submit the request
+    let form = document.createElement('form');
+    form.method = 'POST';  // Changed from GET to POST
+    form.action = url;
+    
+    // Add CSRF token
+    let csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = "{{ csrf_token }}";
+    form.appendChild(csrfInput);
+    
+    document.body.appendChild(form);
+    
+    // Submit form and handle response
+    form.submit();
+    
+    // Restore original content after a short delay
+    setTimeout(() => {
+        $("#classStudentsList").html(originalContent);
+    }, 2000);
+}
+
+function removeStudentFromClass(studentId) {
+    if (!confirm("Are you sure you want to remove this student from the class?")) {
+        return;
+    }
+
+    console.log('[DEBUG] Removing student with ID:', studentId, 'from class:', currentClassId);
+
+    $.ajax({
+        url: "/remove_student_ajax/",
+        type: "POST",
+        data: {
+            class_id: currentClassId,
+            student_id: studentId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            console.log('[DEBUG] Student removal response:', response);
+            if (response.success) {
+                console.log('[DEBUG] Student removed successfully');
+                loadClassStudents(currentClassId);
+                // Refresh available students list if the add students modal is open
+                if ($("#addStudentsModal").hasClass('show')) {
+                    loadAvailableStudents(currentClassId);
+                }
+            } else {
+                console.error('[DEBUG] Error in removal response:', response.error);
+                alert("Error removing student: " + response.error);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('[DEBUG] Error removing student:', {
+                status: status,
+                statusText: xhr.statusText,
+                responseText: xhr.responseText,
+                error: error
+            });
+            alert("Error removing student: " + error);
+        }
+    });
+}
+
+function addStudents(classId) {
+    currentClassId = classId;
+    loadAvailableStudents(classId);
+    $("#addStudentsModal").modal("show");
+}
+
+function loadAvailableStudents(classId) {
+    if (!classId) {
+        console.error("No class ID found");
+        alert("Error: No class ID found");
+        return;
+    }
+
+    // Show loading message
+    $("#studentSelect").empty().append(new Option('Loading students...', ''));
+
+    // Get class details to obtain course_session_id
+    $.ajax({
+        type: "POST",
+        url: "{% url 'get_class_details' %}",
+        data: {
+            class_id: classId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            console.log("Class details response:", response);
+            var courseSessionId = response.course_session_id;
+            
+            // Now load available students with the course_session_id
+            $.ajax({
+                type: "POST",
+                url: "{% url 'get_available_students' %}",
+                data: {
+                    course_session_id: courseSessionId,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    console.log("Available students response:", response);
+                    $("#studentSelect").empty();
+                    
+                    if (!response.students || response.students.length === 0) {
+                        $("#studentSelect").append(new Option('No available students', ''));
+                    } else {
+                        $.each(response.students, function(index, student) {
+                            $("#studentSelect").append(new Option(
+                                student.name + ' (' + student.registration_number + ')',
+                                student.id
+                            ));
+                        });
+                    }
+                    $("#studentSelect").trigger('change');
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading available students:", error);
+                    alert("Error loading available students: " + error);
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error getting class details:", error);
+            alert("Error getting class details: " + error);
+        }
+    });
+}
+
+function findStudentsByRange() {
+    let startRange = $("#regStart").val();
+    let endRange = $("#regEnd").val();
+    
+    if (!startRange || !endRange) {
+        alert("Please enter both start and end registration numbers");
+        return;
+    }
+
+    $.ajax({
+        url: "/get_students_by_range/",
+        type: "POST",
+        data: {
+            start_range: startRange,
+            end_range: endRange,
+            class_id: currentClassId,
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            let rangeSelect = $("#rangeStudentSelect");
+            rangeSelect.empty();
+            
+            response.students.forEach(function(student) {
+                rangeSelect.append(new Option(
+                    student.name + ' (' + student.registration_number + ')',
+                    student.id
+                ));
+            });
+            rangeSelect.trigger('change');
+        },
+        error: function(xhr) {
+            alert("Error finding students: " + xhr.responseJSON.error);
+        }
+    });
+}
+
+function saveStudents() {
+    let selectedStudents = [];
+    
+    // Get students from both tabs
+    let normalSelected = $("#studentSelect").val() || [];
+    let rangeSelected = $("#rangeStudentSelect").val() || [];
+    selectedStudents = [...normalSelected, ...rangeSelected];
+
+    if (selectedStudents.length === 0) {
+        alert("Please select at least one student");
+        return;
+    }
+
+    console.log("Selected students:", selectedStudents);
+
+    $.ajax({
+        url: "/add_students_to_class/",
+        type: "POST",
+        data: {
+            class_id: currentClassId,
+            student_ids: selectedStudents.join(','), // Send as comma-separated string
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        },
+        success: function(response) {
+            if (response.status === "success") {
+                alert(response.message || "Students added successfully");
+                $("#addStudentsModal").modal("hide");
+                
+                // Refresh the view students modal if it's open
+                if ($("#viewStudentsModal").hasClass('show')) {
+                    loadClassStudents(currentClassId);
+                }
+                
+                // Clear selections
+                $("#studentSelect").val(null).trigger('change');
+                $("#rangeStudentSelect").val(null).trigger('change');
+                
+                // Reload available students
+                loadAvailableStudents(currentClassId);
+            } else {
+                alert("Error: " + (response.error || "Unknown error"));
+            }
+        },
+        error: function(xhr) {
+            let errorMsg = "Error adding students";
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMsg += ": " + xhr.responseJSON.error;
+            } else {
+                errorMsg += ". Please try again.";
+            }
+            alert(errorMsg);
+        }
+    });
+}
+
+$(document).ready(function() {
+    // Initialize Select2
+    $('.select2').select2({
+        theme: 'bootstrap4',
+        width: '100%'
+    });
+    
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock custom_js %} 

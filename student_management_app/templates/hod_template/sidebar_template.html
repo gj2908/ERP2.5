@@ -1,0 +1,355 @@
+{% load static %}
+{% url 'admin_home' as admin_home_url %}
+{% url 'add_course' as add_course_url %}
+{% url 'manage_course' as manage_course_url %}
+{% url 'add_course_session' as add_course_session_url %}
+{% url 'manage_course_session' as manage_course_session_url %}
+{% url 'add_subject' as add_subject_url %}
+{% url 'manage_subject' as manage_subject_url %}
+{% url 'manage_class' as manage_class_url %}
+{% url 'add_class' as add_class_url %}
+{% url 'add_staff' as add_staff_url %}
+{% url 'manage_staff' as manage_staff_url %}
+{% url 'bulk_upload_staff' as bulk_upload_staff_url %}
+{% url 'add_student' as add_student_url %}
+{% url 'manage_student' as manage_student_url %}
+{% url 'bulk_upload_student' as bulk_upload_student_url %}
+{% url 'admin_view_attendance' as admin_view_attendance_url %}
+{% url 'student_feedback_message' as student_feedback_message_url %}
+{% url 'staff_feedback_message' as staff_feedback_message_url %}
+{% url 'debug_settings' as debug_settings_url %}
+{% url 'add_session' as add_session_url %}
+{% url 'manage_session' as manage_session_url %}
+{% url 'attendance_edit_requests' as attendance_edit_requests_url %}
+{% url 'admin_view_activity_logs' as activity_logs_url %}
+{% url 'manage_admin' as manage_admin_url %}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'admin_home' %}" class="brand-link">
+      <img src="https://upload.wikimedia.org/wikipedia/en/f/fe/Srmseal.png" alt="SRMIST Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">SRMIST Admin</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar os-host os-theme-light os-host-overflow os-host-overflow-y os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-transition">
+      <div class="os-padding">
+        <div class="os-viewport os-viewport-native-scrollbars-invisible">
+          <div class="os-content" style="padding: 0px 8px; height: 100%;">
+            <!-- Sidebar user panel (optional) -->
+            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+              <div class="image">
+                <img src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+              </div>
+              <div class="info">
+                <a href="{% url 'admin_profile' %}" class="d-block">{{ user.username }}</a>
+                <small class="text-muted">Administrator</small>
+              </div>
+            </div>
+
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+              <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent nav-compact" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                  <a href="{% url 'admin_home' %}" class="nav-link {% if request.path == admin_home_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <p>Dashboard</p>
+                  </a>
+                </li>
+                
+                <li class="nav-header">ACADEMIC MANAGEMENT</li>
+                
+                <li class="nav-item has-treeview {% if request.path == manage_course_url or request.path == manage_session_url or request.path == manage_subject_url or request.path == manage_class_url %} menu-open {% endif %}">
+                  <a href="#" class="nav-link {% if request.path == manage_course_url or request.path == manage_session_url or request.path == manage_subject_url or request.path == manage_class_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-graduation-cap"></i>
+                    <p>
+                      Course Management
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{% url 'manage_course' %}" class="nav-link {% if request.path == manage_course_url %} active {% endif %}">
+                        <i class="fas fa-list-alt nav-icon"></i>
+                        <p>Manage Courses</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'manage_session' %}" class="nav-link {% if request.path == manage_session_url %} active {% endif %}">
+                        <i class="fas fa-calendar-alt nav-icon"></i>
+                        <p>Manage Sessions</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'manage_subject' %}" class="nav-link {% if request.path == manage_subject_url %} active {% endif %}">
+                        <i class="fas fa-list-alt nav-icon"></i>
+                        <p>Manage Subjects</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'manage_class' %}" class="nav-link {% if request.path == manage_class_url %} active {% endif %}">
+                        <i class="fas fa-chalkboard-teacher nav-icon"></i>
+                        <p>Manage Classes</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                
+                
+                <li class="nav-item has-treeview {% if request.path == add_staff_url or request.path == manage_staff_url or request.path == bulk_upload_staff_url %} menu-open {% endif %}">
+                  <a href="#" class="nav-link {% if request.path == add_staff_url or request.path == manage_staff_url or request.path == bulk_upload_staff_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                    <p>
+                      Staff Management
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{% url 'add_staff' %}" class="nav-link {% if request.path == add_staff_url %} active {% endif %}">
+                        <i class="fas fa-user-plus nav-icon"></i>
+                        <p>Add Staff</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'manage_staff' %}" class="nav-link {% if request.path == manage_staff_url %} active {% endif %}">
+                        <i class="fas fa-users-cog nav-icon"></i>
+                        <p>Manage Staff</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'bulk_upload_staff' %}" class="nav-link {% if request.path == bulk_upload_staff_url %} active {% endif %}">
+                        <i class="fas fa-file-upload nav-icon"></i>
+                        <p>Bulk Upload</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                
+                <li class="nav-item has-treeview {% if request.path == add_student_url or request.path == manage_student_url or request.path == bulk_upload_student_url %} menu-open {% endif %}">
+                  <a href="#" class="nav-link {% if request.path == add_student_url or request.path == manage_student_url or request.path == bulk_upload_student_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-user-graduate"></i>
+                    <p>
+                      Student Management
+                      <i class="fas fa-angle-left right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{% url 'add_student' %}" class="nav-link {% if request.path == add_student_url %} active {% endif %}">
+                        <i class="fas fa-user-plus nav-icon"></i>
+                        <p>Add Student</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'manage_student' %}" class="nav-link {% if request.path == manage_student_url %} active {% endif %}">
+                        <i class="fas fa-users-cog nav-icon"></i>
+                        <p>Manage Students</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'bulk_upload_student' %}" class="nav-link {% if request.path == bulk_upload_student_url %} active {% endif %}">
+                        <i class="fas fa-file-upload nav-icon"></i>
+                        <p>Bulk Upload</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                
+                <li class="nav-item">
+                  <a href="{% url 'admin_view_attendance' %}" class="nav-link {% if request.path == admin_view_attendance_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-calendar-check"></i>
+                    <p>View Attendance</p>
+                  </a>
+                </li>
+                
+                <!-- Link to Attendance Edit Requests -->
+                <li class="nav-item">
+                  <a href="{% url 'attendance_edit_requests' %}" class="nav-link {% if 'attendance_edit_requests' in request.path %} active {% endif %}">
+                    <i class="fas fa-edit nav-icon"></i>
+                    <p>Attendance Edit Requests</p>
+                  </a>
+                </li>
+                
+                <li class="nav-header">FEEDBACK</li>
+                <li class="nav-item">
+                  <a href="{% url 'student_feedback_message' %}" class="nav-link {% if request.path == student_feedback_message_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-comments"></i>
+                    <p>Student Feedback</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{% url 'staff_feedback_message' %}" class="nav-link {% if request.path == staff_feedback_message_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-comment-dots"></i>
+                    <p>Staff Feedback</p>
+                  </a>
+                </li>
+                
+                <li class="nav-header">SECURITY & SETTINGS</li>
+                
+                <li class="nav-item">
+                  <a href="{% url 'manage_admin' %}" class="nav-link {% if request.path == manage_admin_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-user-shield"></i>
+                    <p>Admin Management</p>
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                  <a href="{% url 'admin_view_activity_logs' %}" class="nav-link {% if 'admin_view_activity_logs' in request.path %} active {% endif %}">
+                    <i class="nav-icon fas fa-shield-alt"></i>
+                    <p>User Activity Logs</p>
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                  <a href="{% url 'debug_settings' %}" class="nav-link {% if request.path == debug_settings_url %} active {% endif %}">
+                    <i class="nav-icon fas fa-cogs"></i>
+                    <p>Developer Options</p>
+                  </a>
+                </li>
+                <li class="nav-item mt-4">
+                  <a href="{% url 'logout' %}" class="nav-link bg-danger">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <p>Logout</p>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            <!-- /.sidebar-menu -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.sidebar -->
+</aside>
+
+<style>
+  /* Optimize sidebar layout */
+  .sidebar {
+    height: calc(100% - 4.6rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 10px 40px 5px;
+    width: 250px;
+  }
+  
+  /* Improve scrollbar styling */
+  .sidebar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+  
+  .sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+  
+  /* Optimize nav items */
+  .nav-sidebar {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav-sidebar .nav-item {
+    width: 100%;
+  }
+  
+  .nav-sidebar .nav-link {
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .nav-sidebar .nav-link i {
+    min-width: 1.75rem;
+    font-size: 1rem;
+    text-align: center;
+    margin-right: 0.5rem;
+  }
+  
+  .nav-sidebar .nav-link p {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Optimize treeview */
+  .nav-sidebar .nav-treeview {
+    margin-left: 0;
+    padding-left: 1rem;
+  }
+  
+  .nav-sidebar .nav-treeview .nav-link {
+    padding-left: 1rem;
+  }
+  
+  /* Optimize headers */
+  .nav-header {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+  
+  /* Brand logo optimization */
+  .brand-link {
+    padding: 0.75rem 0.5rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .brand-link .brand-image {
+    margin-right: 0.5rem;
+  }
+  
+  /* User panel optimization */
+  .user-panel {
+    padding: 0.5rem;
+  }
+  
+  .user-panel .image {
+    padding-left: 0;
+  }
+  
+  .user-panel .info {
+    margin-left: 0.5rem;
+  }
+  
+  /* Fix AdminLTE's overflow handling */
+  .os-viewport {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+  
+  .os-content {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    padding: 0 !important;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 235px;
+      padding-right: 5px;
+    }
+    
+    .nav-sidebar .nav-link {
+      padding: 0.5rem;
+    }
+    
+    .nav-sidebar .nav-treeview {
+      padding-left: 0.5rem;
+    }
+  }
+</style>

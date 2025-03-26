@@ -1,0 +1,121 @@
+{% extends 'student_template/base_template.html' %}
+{% block custom_css %}
+<style>
+.col-lg-3.attendance_div_red {
+    padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background: #f44336;
+    border: 10px solid white;
+    text-align: center;
+    color: #fff;
+    border-radius: 30px;
+    box-shadow: 1px 1px 1px grey;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.col-lg-3.attendance_div_green {
+    padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background: #388e3c;
+    border: 10px solid white;
+    text-align: center;
+    color: #fff;
+    border-radius: 30px;
+    box-shadow: 1px 1px 1px grey;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.attendance-stats {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+</style>
+{% endblock custom_css %}
+{% block page_title %}
+Attendance Data
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">View Attendance</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        {% if attendance_reports %}
+                            <div class="attendance-stats">
+                                <h4>{{ attendance_reports.0.attendance_id.subject_id.subject_name }}</h4>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <strong>Total Classes:</strong> {{ attendance_reports|length }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {% with present_count=0 %}
+                                            {% for report in attendance_reports %}
+                                                {% if report.status %}
+                                                    {% with present_count=present_count|add:1 %}{% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <strong>Present:</strong> {{ present_count }}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {% with absent_count=0 %}
+                                            {% for report in attendance_reports %}
+                                                {% if not report.status %}
+                                                    {% with absent_count=absent_count|add:1 %}{% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <strong>Absent:</strong> {{ absent_count }}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {% with present_count=0 %}
+                                            {% for report in attendance_reports %}
+                                                {% if report.status %}
+                                                    {% with present_count=present_count|add:1 %}{% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <strong>Attendance %:</strong> {{ attendance_percentage|floatformat:2 }}%
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                {% for attendance_report in attendance_reports %}
+                                    {% if attendance_report.status == True %}
+                                        <div class="col-lg-3 attendance_div_green">
+                                            <b>Date: {{ attendance_report.attendance_id.attendance_date }}</b>
+                                            <br>
+                                            <b>[ Status: Present ]</b>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-lg-3 attendance_div_red">
+                                            <b>Date: {{ attendance_report.attendance_id.attendance_date }}</b>
+                                            <br>
+                                            <b>[ Status: Absent ]</b>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger text-center">No Attendance Data Found!</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}

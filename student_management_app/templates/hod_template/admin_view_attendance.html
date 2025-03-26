@@ -1,0 +1,324 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+View Attendance
+{% endblock page_title %}
+
+{% block custom_css %}
+<style>
+    .progress-bar-container {
+        width: 100%;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        height: 25px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-bar-fill {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+        transition: width 0.5s;
+    }
+    
+    .progress-high {
+        background-color: #28a745;  /* success */
+    }
+    
+    .progress-medium {
+        background-color: #ffc107;  /* warning */
+    }
+    
+    .progress-low {
+        background-color: #dc3545;  /* danger */
+    }
+    
+    .sort-icons {
+        cursor: pointer;
+        margin-left: 5px;
+    }
+</style>
+{% endblock custom_css %}
+
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">View Attendance Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" id="attendance_form" action="{% url 'admin_view_attendance' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar-alt"></i> Session Year</label>
+                                <select class="form-control" name="session_id" id="session" title="Select Session Year" required>
+                                    <option value="">Select Session Year</option>
+                                    {% for session in sessions %}
+                                      <option value="{{ session.id }}">{{ session.start_year }} - {{ session.end_year }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-graduation-cap"></i> Class</label>
+                                <select class="form-control" name="class_id" id="class_id" title="Select Class" required>
+                                    <option value="">Select Class</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-book"></i> Subject</label>
+                                <select class="form-control" name="subject_id" id="subject_id" title="Select Subject" required>
+                                    <option value="">Select Subject</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-search"></i> View Attendance Summary
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                {% if attendance_data %}
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Attendance Statistics</h3>
+                            <div class="card-tools">
+                                <form method="post" action="{% url 'export_attendance_pdf' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="session_id" value="{{ session.id }}">
+                                    <input type="hidden" name="class_id" value="{{ class_obj.id }}">
+                                    <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                                    <button type="submit" class="btn btn-light btn-sm ml-2">
+                                        <i class="fas fa-file-pdf"></i> Print Report
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="attendance-details mb-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong><i class="fas fa-calendar-alt"></i> Session:</strong> {{ session.start_year }} - {{ session.end_year }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong><i class="fas fa-graduation-cap"></i> Class:</strong> {{ class_obj.course_session.course.course_name }} - {{ class_obj.section }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong><i class="fas fa-book"></i> Subject:</strong> {{ subject.subject_name }}</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p><strong><i class="fas fa-chalkboard-teacher"></i> Faculty:</strong> {{ faculty_name }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong><i class="fas fa-clipboard-list"></i> Total Classes:</strong> {{ total_classes }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong><i class="fas fa-users"></i> Total Students:</strong> {{ attendance_data|length }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Student Name</th>
+                                            <th>Registration Number</th>
+                                            <th>Total Classes</th>
+                                            <th>Classes Attended</th>
+                                            <th>Classes Absent</th>
+                                            <th>Attendance % <i class="fas fa-sort-up sort-icons" id="sort-asc"></i><i class="fas fa-sort-down sort-icons" id="sort-desc"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for student in attendance_data %}
+                                        <tr>
+                                            <td>{{ student.student_name }}</td>
+                                            <td>{{ student.registration_number }}</td>
+                                            <td>{{ student.total_classes }}</td>
+                                            <td>{{ student.classes_attended }}</td>
+                                            <td>{{ student.classes_absent }}</td>
+                                            <td>
+                                                <div class="progress-bar-container">
+                                                    <div class="progress-bar-fill 
+                                                        {% if student.attendance_percentage >= 75 %}progress-high
+                                                        {% elif student.attendance_percentage >= 50 %}progress-medium
+                                                        {% else %}progress-low{% endif %}" 
+                                                        data-percentage="{{ student.attendance_percentage }}">
+                                                        {{ student.attendance_percentage|floatformat:1 }}%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% elif subject %}
+                    <div class="alert alert-warning">
+                        <h5><i class="icon fas fa-exclamation-triangle"></i> No attendance records found</h5>
+                        <p>No attendance records have been created for this class, subject, and session yet.</p>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+    $(document).ready(function(){
+        // Set progress bar widths using JS
+        $('.progress-bar-fill').each(function() {
+            const percentage = $(this).data('percentage');
+            $(this).css('width', percentage + '%');
+        });
+        
+        // Function to load classes based on selected session
+        function loadClasses() {
+            var session_id = $("#session").val();
+            
+            if (session_id) {
+                $.ajax({
+                    url: '{% url "get_classes_by_session" %}',
+                    type: 'POST',
+                    data: {
+                        'session_id': session_id,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        var classes = response.classes;
+                        var classSelect = $("#class_id");
+                        classSelect.empty();
+                        classSelect.append('<option value="">Select Class</option>');
+                        
+                        classes.forEach(function(class_obj) {
+                            classSelect.append(
+                                $('<option></option>')
+                                    .val(class_obj.id)
+                                    .text(class_obj.course_name + ' - ' + class_obj.section)
+                            );
+                        });
+                        
+                        // Clear subject dropdown when class changes
+                        $("#subject_id").empty().append('<option value="">Select Subject</option>');
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Error loading classes: " + xhr.responseText);
+                    }
+                });
+            } else {
+                $("#class_id").empty().append('<option value="">Select Class</option>');
+                $("#subject_id").empty().append('<option value="">Select Subject</option>');
+            }
+        }
+
+        // Function to load subjects based on selected class
+        function loadSubjects() {
+            var class_id = $("#class_id").val();
+            
+            if (class_id) {
+                $.ajax({
+                    url: '{% url "get_subjects_by_class" %}',
+                    type: 'POST',
+                    data: {
+                        'class_id': class_id,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        var subjects = response.subjects;
+                        var subjectSelect = $("#subject_id");
+                        subjectSelect.empty();
+                        subjectSelect.append('<option value="">Select Subject</option>');
+                        
+                        subjects.forEach(function(subject) {
+                            subjectSelect.append(
+                                $('<option></option>')
+                                    .val(subject.id)
+                                    .text(subject.subject_name)
+                            );
+                        });
+                    },
+                    error: function(xhr) {
+                        alert("Error loading subjects: " + xhr.responseText);
+                    }
+                });
+            } else {
+                $("#subject_id").empty().append('<option value="">Select Subject</option>');
+            }
+        }
+
+        // Load classes when session changes
+        $("#session").change(function() {
+            loadClasses();
+        });
+
+        // Load subjects when class changes
+        $("#class_id").change(function() {
+            loadSubjects();
+        });
+        
+        // Sorting functions
+        function sortTable(n, order) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.querySelector(".table");
+            switching = true;
+            dir = order;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (parseFloat(x.innerText) > parseFloat(y.innerText)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (parseFloat(x.innerText) < parseFloat(y.innerText)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        $("#sort-asc").click(function() {
+            sortTable(5, "asc");
+        });
+
+        $("#sort-desc").click(function() {
+            sortTable(5, "desc");
+        });
+    });
+</script>
+{% endblock custom_js %}

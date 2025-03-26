@@ -1,0 +1,128 @@
+{% extends 'hod_template/base_template.html' %}
+{% block main_content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">User Activity Logs</h3>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="card-body">
+                        <form method="get" action="{% url 'admin_view_activity_logs' %}">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>User</label>
+                                        <select class="form-control" name="user_id">
+                                            <option value="">-- All Users --</option>
+                                            {% for user in users %}
+                                            <option value="{{ user.id }}" {% if user_id == user.id|stringformat:"i" %}selected{% endif %}>
+                                                {{ user.first_name }} {{ user.last_name }} ({{ user.username }})
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Action Type</label>
+                                        <select class="form-control" name="action">
+                                            <option value="">-- All Actions --</option>
+                                            {% for action_code, action_label in action_types %}
+                                            <option value="{{ action_code }}" {% if action_type == action_code %}selected{% endif %}>
+                                                {{ action_label }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Date From</label>
+                                        <input type="date" class="form-control" name="date_from" value="{{ date_from }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Date To</label>
+                                        <input type="date" class="form-control" name="date_to" value="{{ date_to }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    <a href="{% url 'admin_view_activity_logs' %}" class="btn btn-secondary">Reset Filters</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Activity Logs Table -->
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Date & Time</th>
+                                        <th>IP Address</th>
+                                        <th>Target Model</th>
+                                        <th>Target Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for activity in activities %}
+                                    <tr>
+                                        <td>{{ activity.user.first_name }} {{ activity.user.last_name }} ({{ activity.user.email }})</td>
+                                        <td>
+                                            {% if activity.action == 'login' %}
+                                                <span class="badge badge-success">Login</span>
+                                            {% elif activity.action == 'logout' %}
+                                                <span class="badge badge-secondary">Logout</span>
+                                            {% elif activity.action == 'create' %}
+                                                <span class="badge badge-primary">Create</span>
+                                            {% elif activity.action == 'update' %}
+                                                <span class="badge badge-info">Update</span>
+                                            {% elif activity.action == 'delete' %}
+                                                <span class="badge badge-danger">Delete</span>
+                                            {% elif activity.action == 'view' %}
+                                                <span class="badge badge-light">View</span>
+                                            {% elif activity.action == 'download' %}
+                                                <span class="badge badge-dark">Download</span>
+                                            {% elif activity.action == 'upload' %}
+                                                <span class="badge badge-warning">Upload</span>
+                                            {% elif activity.action == 'failed_login' %}
+                                                <span class="badge badge-danger">Failed Login</span>
+                                            {% elif activity.action == 'password_change' %}
+                                                <span class="badge badge-warning">Password Change</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">{{ activity.action }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ activity.action_time }}</td>
+                                        <td>{{ activity.ip_address }}</td>
+                                        <td>{{ activity.target_model }}</td>
+                                        <td>{{ activity.target_detail }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">No activity logs found</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock main_content %} 

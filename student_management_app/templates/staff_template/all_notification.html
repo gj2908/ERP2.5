@@ -1,0 +1,17 @@
+{% extends 'staff_template/base_template.html' %}
+{% block page_title %}
+Notifications
+{% endblock page_title %}
+
+{% block main_content %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        {% include 'components/notification_template.html' with user_role="Staff" clear_url="clear_staff_notifications" %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock main_content %}
+

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SMS 2.5 User Manual</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SMS 2.5 User Manual</h1>
+</header>
+<h1 id="student-management-system-sms-2.5">Student Management System
+(SMS 2.5)</h1>
+<h1 id="user-manual">User Manual</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#system-requirements">System Requirements</a></li>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#adminhod-user-guide">Admin/HOD User Guide</a></li>
+<li><a href="#staff-user-guide">Staff User Guide</a></li>
+<li><a href="#student-user-guide">Student User Guide</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#contact-support">Contact Support</a></li>
+</ol>
+<hr />
+<h2 id="introduction">Introduction</h2>
+<p>Welcome to the Student Management System (SMS 2.5) User Manual. This
+comprehensive system streamlines academic institution management by
+providing specialized interfaces for administrators, staff, and
+students. This manual introduces key features and provides step-by-step
+instructions for each user role.</p>
+<h3 id="purpose-of-the-system">Purpose of the System</h3>
+<p>The Student Management System enables educational institutions to: -
+Manage courses, subjects, and classes - Track staff and student
+information - Record and monitor attendance - Manage student feedback
+and leave requests - Conduct online classes - Generate reports and
+analytics</p>
+<h3 id="user-roles">User Roles</h3>
+<p>The system supports three primary user roles: 1. <strong>Admin/HOD
+(Head of Department)</strong>: Manages all aspects of the system,
+including user accounts, courses, classes, staff, and students. 2.
+<strong>Staff</strong>: Manages classes, attendance, results, and
+interacts with students. 3. <strong>Students</strong>: View attendance,
+results, provide feedback, apply for leave, and attend online
+classes.</p>
+<hr />
+<h2 id="system-requirements">System Requirements</h2>
+<h3 id="hardware-requirements">Hardware Requirements</h3>
+<ul>
+<li>Computer with internet connection</li>
+<li>Minimum 4GB RAM (8GB recommended)</li>
+<li>2GHz dual-core processor or better</li>
+<li>10GB available disk space</li>
+</ul>
+<h3 id="software-requirements">Software Requirements</h3>
+<ul>
+<li>Modern web browser (Chrome, Firefox, Edge, Safari)</li>
+<li>JavaScript enabled</li>
+<li>Cookies enabled</li>
+<li>Internet connection with minimum 1 Mbps speed</li>
+</ul>
+<hr />
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="accessing-the-system">Accessing the System</h3>
+<ol type="1">
+<li>Open your web browser and navigate to the system URL provided by
+your administrator.</li>
+<li>You will see the login page with the SRMIST logo and login
+form.</li>
+</ol>
+<h3 id="login-process">Login Process</h3>
+<ol type="1">
+<li>Enter your email address in the “Email Address” field.</li>
+<li>Enter your password in the “Password” field.</li>
+<li>Solve the simple math captcha.</li>
+<li>Click “Sign In” to access your dashboard.</li>
+</ol>
+<h3 id="password-recovery">Password Recovery</h3>
+<p>If you forget your password: 1. Click “Forgot your password?” on the
+login page. 2. Enter your registered email address. 3. Check your email
+for the password reset link. 4. Click the link and create a new
+password.</p>
+<h3 id="first-time-login">First-time Login</h3>
+<p>For first-time users, you might need to: 1. Use the temporary
+credentials provided by your administrator. 2. Change your password
+immediately after logging in. 3. Update your profile information.</p>
+<hr />
+<h2 id="adminhod-user-guide">Admin/HOD User Guide</h2>
+<p>As an Admin/HOD, you have complete control over the Student
+Management System. This section provides detailed instructions for
+managing the system.</p>
+<h3 id="dashboard-overview">Dashboard Overview</h3>
+<p>After logging in, you’ll see the Admin Dashboard, which displays: -
+Quick statistics (total students, staff, courses, subjects) - Recent
+activities - System notifications - Quick access to key features</p>
+<h3 id="user-management">User Management</h3>
+<h4 id="managing-admin-accounts">Managing Admin Accounts</h4>
+<ol type="1">
+<li>Navigate to “Developer Options” in the System Settings section of
+the sidebar.</li>
+<li>Toggle “Admin Signup” to enable/disable account creation.</li>
+<li>Use the Admin Signup Link to create additional admin accounts when
+needed.</li>
+</ol>
+<h4 id="managing-staff">Managing Staff</h4>
+<ol type="1">
+<li><strong>Adding Staff</strong>:
+<ul>
+<li>Go to “Add Staff” under Staff Management.</li>
+<li>Fill in the required information (name, email, password,
+address).</li>
+<li>Click “Add Staff” to create the account.</li>
+</ul></li>
+<li><strong>Managing Staff</strong>:
+<ul>
+<li>Go to “Manage Staff” under Staff Management.</li>
+<li>View all staff members in a tabular format.</li>
+<li>Edit, delete, or update staff information as needed.</li>
+</ul></li>
+<li><strong>Bulk Upload Staff</strong>:
+<ul>
+<li>Go to “Bulk Upload” under Staff Management.</li>
+<li>Download the sample CSV template.</li>
+<li>Fill the template with staff information.</li>
+<li>Upload the file to create multiple staff accounts at once.</li>
+</ul></li>
+</ol>
+<h4 id="managing-students">Managing Students</h4>
+<ol type="1">
+<li><strong>Adding Students</strong>:
+<ul>
+<li>Go to “Add Student” under Student Management.</li>
+<li>Fill in the required information (name, email, password, gender,
+course, session year).</li>
+<li>Upload a profile picture if required.</li>
+<li>Click “Add Student” to create the account.</li>
+</ul></li>
+<li><strong>Managing Students</strong>:
+<ul>
+<li>Go to “Manage Students” under Student Management.</li>
+<li>View all students in a tabular format.</li>
+<li>Edit, delete, or update student information as needed.</li>
+</ul></li>
+<li><strong>Bulk Upload Students</strong>:
+<ul>
+<li>Go to “Bulk Upload” under Student Management.</li>
+<li>Download the sample CSV template.</li>
+<li>Fill the template with student information.</li>
+<li>Upload the file to create multiple student accounts at once.</li>
+</ul></li>
+</ol>
+<h3 id="academic-management">Academic Management</h3>
+<h4 id="course-management">Course Management</h4>
+<ol type="1">
+<li><strong>Adding Courses</strong>:
+<ul>
+<li>Go to “Add Course” under Course Management.</li>
+<li>Enter the course name and click “Add Course”.</li>
+</ul></li>
+<li><strong>Managing Courses</strong>:
+<ul>
+<li>Go to “Manage Courses” under Course Management.</li>
+<li>View, edit, or delete existing courses.</li>
+</ul></li>
+<li><strong>Course Sessions</strong>:
+<ul>
+<li>Go to “Add Session To Course” to assign an academic session to a
+course.</li>
+<li>Go to “Manage Course Sessions” to view and manage existing
+course-session pairs.</li>
+</ul></li>
+</ol>
+<h4 id="subject-management">Subject Management</h4>
+<ol type="1">
+<li><strong>Adding Subjects</strong>:
+<ul>
+<li>Go to “Add Subject” under Subject Management.</li>
+<li>Select a course session and enter the subject name.</li>
+<li>Click “Add Subject” to create it.</li>
+</ul></li>
+<li><strong>Managing Subjects</strong>:
+<ul>
+<li>Go to “Manage Subjects” under Subject Management.</li>
+<li>View, edit, or delete existing subjects.</li>
+</ul></li>
+</ol>
+<h4 id="class-management">Class Management</h4>
+<ol type="1">
+<li><strong>Managing Classes</strong>:
+<ul>
+<li>Go to “Manage Classes” under Subject Management.</li>
+<li>Create new classes by selecting session, course, and section.</li>
+<li>Assign subjects and staff to classes.</li>
+<li>Add students to classes.</li>
+</ul></li>
+</ol>
+<h4 id="session-management">Session Management</h4>
+<ol type="1">
+<li><strong>Adding Sessions</strong>:
+<ul>
+<li>Go to “Add Session” under Session Management.</li>
+<li>Enter the start year and end year.</li>
+<li>Click “Add Session Year” to create it.</li>
+</ul></li>
+<li><strong>Managing Sessions</strong>:
+<ul>
+<li>Go to “Manage Sessions” under Session Management.</li>
+<li>View, edit, or delete existing sessions.</li>
+</ul></li>
+</ol>
+<h3 id="monitoring-communication">Monitoring &amp; Communication</h3>
+<h4 id="attendance-management">Attendance Management</h4>
+<ol type="1">
+<li>View attendance records by navigating to “View Attendance”.</li>
+<li>Select a class, subject, and date range to view attendance
+reports.</li>
+<li>Export attendance data as Excel or PDF for record-keeping.</li>
+</ol>
+<h4 id="leave-management">Leave Management</h4>
+<ol type="1">
+<li><strong>Student Leave</strong>:
+<ul>
+<li>Go to “Student Leave” under Feedback &amp; Leave.</li>
+<li>View and manage student leave requests.</li>
+<li>Approve or reject requests with a click.</li>
+</ul></li>
+<li><strong>Staff Leave</strong>:
+<ul>
+<li>Go to “Staff Leave” under Feedback &amp; Leave.</li>
+<li>View and manage staff leave requests.</li>
+<li>Approve or reject requests with a click.</li>
+</ul></li>
+</ol>
+<h4 id="feedback-management">Feedback Management</h4>
+<ol type="1">
+<li><strong>Student Feedback</strong>:
+<ul>
+<li>Go to “Student Feedback” under Feedback &amp; Leave.</li>
+<li>View student feedback and respond if needed.</li>
+</ul></li>
+<li><strong>Staff Feedback</strong>:
+<ul>
+<li>Go to “Staff Feedback” under Feedback &amp; Leave.</li>
+<li>View staff feedback and respond if needed.</li>
+</ul></li>
+</ol>
+<h3 id="system-configuration">System Configuration</h3>
+<h4 id="environment-settings">Environment Settings</h4>
+<ol type="1">
+<li>Navigate to “Developer Options” in the System Settings section.</li>
+<li>Configure email settings, debug mode, and domain name.</li>
+<li>View other system settings (read-only).</li>
+</ol>
+<h4 id="signup-configuration">Signup Configuration</h4>
+<ol type="1">
+<li>Navigate to “Developer Options” in the System Settings section.</li>
+<li>Toggle the switches to enable/disable Admin, Staff, and Student
+signup options.</li>
+<li>Use the links to access the signup pages when needed.</li>
+</ol>
+<hr />
+<h2 id="staff-user-guide">Staff User Guide</h2>
+<p>As a Staff member, you are responsible for managing classes,
+recording attendance, grading students, and more. This section provides
+detailed instructions for your role.</p>
+<h3 id="dashboard-overview-1">Dashboard Overview</h3>
+<p>After logging in, you’ll see the Staff Dashboard, which displays: -
+Your assigned subjects and classes - Quick statistics (total students,
+subjects, online classes) - Recent activities - System notifications</p>
+<h3 id="profile-management">Profile Management</h3>
+<ol type="1">
+<li><strong>Viewing Your Profile</strong>:
+<ul>
+<li>Click on your name in the top-right corner.</li>
+<li>Select “Profile” from the dropdown menu.</li>
+<li>View your personal information.</li>
+</ul></li>
+<li><strong>Changing Password</strong>:
+<ul>
+<li>Click on your name in the top-right corner.</li>
+<li>Select “Change Password” from the dropdown menu.</li>
+<li>Enter your current and new passwords.</li>
+<li>Click “Save” to update your password.</li>
+</ul></li>
+</ol>
+<h3 id="class-management-1">Class Management</h3>
+<h4 id="taking-attendance">Taking Attendance</h4>
+<ol type="1">
+<li>Go to “Take Attendance” in the sidebar.</li>
+<li>Select the subject, class, and date.</li>
+<li>Mark attendance for each student (Present/Absent).</li>
+<li>Click “Save Attendance” to record.</li>
+</ol>
+<h4 id="updating-attendance">Updating Attendance</h4>
+<ol type="1">
+<li>Go to “Update Attendance” in the sidebar.</li>
+<li>Select the subject, class, and date.</li>
+<li>Modify the attendance records as needed.</li>
+<li>Click “Update Attendance” to save changes.</li>
+</ol>
+<h4 id="conducting-online-classes">Conducting Online Classes</h4>
+<ol type="1">
+<li><strong>Starting a Live Class</strong>:
+<ul>
+<li>Go to “Start Live Class” in the sidebar.</li>
+<li>Select the subject and session year.</li>
+<li>Enter room name and password.</li>
+<li>Click “Start Class” to create the online classroom.</li>
+<li>Share the link with students.</li>
+</ul></li>
+<li><strong>Managing Active Classes</strong>:
+<ul>
+<li>Go to “View Active Classes” to see your ongoing classes.</li>
+<li>End classes when completed.</li>
+<li>Export attendance reports.</li>
+</ul></li>
+<li><strong>Generating Class Links</strong>:
+<ul>
+<li>Go to “Generate Class Link”.</li>
+<li>Select the subject and class.</li>
+<li>Set an expiration date for the link.</li>
+<li>Share the generated code with students.</li>
+</ul></li>
+</ol>
+<h3 id="student-assessment">Student Assessment</h3>
+<h4 id="managing-results">Managing Results</h4>
+<ol type="1">
+<li><strong>Adding Results</strong>:
+<ul>
+<li>Go to “Add Result” in the sidebar.</li>
+<li>Select the class, subject, and student.</li>
+<li>Enter exam and assignment marks.</li>
+<li>Click “Save Result” to record.</li>
+</ul></li>
+<li><strong>Viewing Results</strong>:
+<ul>
+<li>Go to “View Result” in the sidebar.</li>
+<li>Select the class and subject to view all student results.</li>
+<li>Edit results if needed.</li>
+</ul></li>
+</ol>
+<h3 id="leave-management-1">Leave Management</h3>
+<ol type="1">
+<li><strong>Applying for Leave</strong>:
+<ul>
+<li>Go to “Apply Leave” in the sidebar.</li>
+<li>Enter the leave date(s) and reason.</li>
+<li>Click “Apply for Leave” to submit your request.</li>
+</ul></li>
+<li><strong>Viewing Leave Status</strong>:
+<ul>
+<li>Go to “Apply Leave” to see your leave history.</li>
+<li>Check the status of your leave requests
+(Pending/Approved/Rejected).</li>
+</ul></li>
+</ol>
+<h3 id="feedback">Feedback</h3>
+<ol type="1">
+<li><strong>Submitting Feedback</strong>:
+<ul>
+<li>Go to “Feedback” in the sidebar.</li>
+<li>Enter your feedback message.</li>
+<li>Click “Submit Feedback” to send.</li>
+</ul></li>
+<li><strong>Viewing Responses</strong>:
+<ul>
+<li>Go to “Feedback” to see your feedback history.</li>
+<li>Check if there are any replies from the administration.</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="student-user-guide">Student User Guide</h2>
+<p>As a Student, you can view your attendance, results, apply for leave,
+and participate in online classes. This section provides detailed
+instructions for your role.</p>
+<h3 id="dashboard-overview-2">Dashboard Overview</h3>
+<p>After logging in, you’ll see the Student Dashboard, which displays: -
+Your course and class information - Quick statistics (attendance,
+subjects, pending feedback) - Recent activities - System
+notifications</p>
+<h3 id="profile-management-1">Profile Management</h3>
+<ol type="1">
+<li><strong>Viewing Your Profile</strong>:
+<ul>
+<li>Click on your name in the top-right corner.</li>
+<li>Select “Profile” from the dropdown menu.</li>
+<li>View your personal information.</li>
+</ul></li>
+<li><strong>Changing Password</strong>:
+<ul>
+<li>Click on your name in the top-right corner.</li>
+<li>Select “Change Password” from the dropdown menu.</li>
+<li>Enter your current and new passwords.</li>
+<li>Click “Save” to update your password.</li>
+</ul></li>
+</ol>
+<h3 id="attendance">Attendance</h3>
+<ol type="1">
+<li><strong>Viewing Attendance</strong>:
+<ul>
+<li>Go to “View Attendance” in the sidebar.</li>
+<li>Select the subject and date range.</li>
+<li>View your attendance records for the selected criteria.</li>
+</ul></li>
+</ol>
+<h3 id="academic-performance">Academic Performance</h3>
+<ol type="1">
+<li><strong>Viewing Results</strong>:
+<ul>
+<li>Go to “View Result” in the sidebar.</li>
+<li>View your academic performance across all subjects.</li>
+</ul></li>
+</ol>
+<h3 id="online-classes">Online Classes</h3>
+<ol type="1">
+<li><strong>Joining a Class</strong>:
+<ul>
+<li>Go to “Join Class” in the sidebar.</li>
+<li>Enter the class code provided by your teacher.</li>
+<li>Click “Join” to enter the online classroom.</li>
+</ul></li>
+<li><strong>Attending Live Classes</strong>:
+<ul>
+<li>Join the class at the scheduled time.</li>
+<li>Interact with the teacher and classmates.</li>
+<li>Your attendance is automatically recorded.</li>
+</ul></li>
+</ol>
+<h3 id="leave-management-2">Leave Management</h3>
+<ol type="1">
+<li><strong>Applying for Leave</strong>:
+<ul>
+<li>Go to “Apply Leave” in the sidebar.</li>
+<li>Enter the leave date(s) and reason.</li>
+<li>Click “Apply for Leave” to submit your request.</li>
+</ul></li>
+<li><strong>Viewing Leave Status</strong>:
+<ul>
+<li>Go to “Apply Leave” to see your leave history.</li>
+<li>Check the status of your leave requests
+(Pending/Approved/Rejected).</li>
+</ul></li>
+</ol>
+<h3 id="feedback-1">Feedback</h3>
+<ol type="1">
+<li><strong>Submitting Feedback</strong>:
+<ul>
+<li>Go to “Feedback” in the sidebar.</li>
+<li>Enter your feedback message.</li>
+<li>Click “Submit Feedback” to send.</li>
+</ul></li>
+<li><strong>Viewing Responses</strong>:
+<ul>
+<li>Go to “Feedback” to see your feedback history.</li>
+<li>Check if there are any replies from the administration.</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues-and-solutions">Common Issues and Solutions</h3>
+<ol type="1">
+<li><strong>Cannot Log In</strong>
+<ul>
+<li>Ensure you’re using the correct email and password.</li>
+<li>Check if Caps Lock is on.</li>
+<li>Use the “Forgot Password” feature to reset your password.</li>
+<li>Contact the administrator if problems persist.</li>
+</ul></li>
+<li><strong>Session Timeout</strong>
+<ul>
+<li>The system will automatically log you out after 30 minutes of
+inactivity.</li>
+<li>Save your work frequently.</li>
+<li>Log back in to continue your work.</li>
+</ul></li>
+<li><strong>Cannot Join Online Class</strong>
+<ul>
+<li>Ensure you’ve entered the correct class code.</li>
+<li>Check your internet connection.</li>
+<li>Make sure your browser supports video conferencing.</li>
+<li>Allow camera and microphone permissions when prompted.</li>
+</ul></li>
+<li><strong>Cannot View Attendance or Results</strong>
+<ul>
+<li>Ensure you have access to the selected class/subject.</li>
+<li>Try refreshing the page.</li>
+<li>Clear your browser cache.</li>
+<li>Contact your teacher or administrator if problems persist.</li>
+</ul></li>
+<li><strong>File Upload Issues</strong>
+<ul>
+<li>Ensure the file size is within limits (usually under 5MB).</li>
+<li>Check if the file format is supported.</li>
+<li>Try a different browser if issues persist.</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="contact-support">Contact Support</h2>
+<p>If you encounter issues not covered in this manual or require
+additional assistance:</p>
+<ol type="1">
+<li><strong>Admin/HOD Support</strong>: Contact the system administrator
+at <a href="mailto:admin@example.com">admin@example.com</a>.</li>
+<li><strong>Technical Support</strong>: For technical issues, contact
+the IT department at <a
+href="mailto:support@example.com">support@example.com</a>.</li>
+</ol>
+<p>Include the following information when reporting issues: - Your user
+role (Admin/Staff/Student) - Detailed description of the issue -
+Screenshots of error messages (if applicable) - Steps to reproduce the
+issue</p>
+<hr />
+<p>© 2025 SRMIST Student Management System. All rights reserved.</p>
+</body>
+</html>

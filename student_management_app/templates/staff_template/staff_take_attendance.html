@@ -1,0 +1,463 @@
+{% extends 'staff_template/base_template.html' %}
+{% block page_title %}
+{% endblock page_title %}
+
+{% block custom_css %}
+<style>
+  .form-control {
+    height: 45px;
+    font-size: 16px; /* Better for mobile tapping */
+  }
+  
+  .btn {
+    min-height: 45px;
+    font-size: 16px;
+  }
+  
+  .table-responsive {
+    margin-bottom: 1rem;
+  }
+  
+  /* Custom switch styling */
+  .custom-switch {
+    padding-left: 2.25rem;
+  }
+  
+  .custom-control-label {
+    padding-top: 0.25rem;
+    padding-left: 0.5rem;
+  }
+  
+  /* Loading spinner */
+  .spinner-border {
+    display: none;
+    margin-left: 0.5rem;
+  }
+  
+  /* Toast styling */
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+  }
+  
+  @media (max-width: 768px) {
+    .card-body {
+      padding: 0.75rem;
+    }
+    
+    .table th, .table td {
+      padding: 0.5rem;
+    }
+    
+    .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+    
+    .card-footer {
+      padding: 0.75rem;
+    }
+  }
+</style>
+{% endblock custom_css %}
+
+{% block main_content %}
+    <!-- Toast container -->
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+      <div class="toast-header">
+        <strong class="mr-auto" id="toast-title">Notification</strong>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+      </div>
+      <div class="toast-body" id="toast-message"></div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Take Attendance</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label>Class Subject</label>
+                      <select class="form-control" name="class_subject" id="class_subject" title="Select Class Subject">
+                        <option value="">Select Class Subject</option>
+                        {% for class_subject in class_subjects %}
+                          <option value="{{ class_subject.id }}">
+                            {{ class_subject.subject.subject_name }} 
+                            ({{ class_subject.class_id.course_session.course.course_name }} - 
+                            {{ class_subject.class_id.section }})
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Attendance Date</label>
+                      <input type="date" class="form-control" name="attendance_date" id="attendance_date" title="Select Attendance Date">
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer">
+                    <button type="button" class="btn btn-primary" id="fetch_student">
+                      Fetch Students
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+                <!-- /.card -->
+                <div class="card card-primary" id="student_data" style="display: none;">
+                  <div class="card-header">
+                    <h3 class="card-title">Student List</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <button type="button" class="btn btn-warning" id="uncheck_all">Mark All Absent</button>
+                      <button type="button" class="btn btn-success ml-2" id="check_all">Mark All Present</button>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                          <tr>
+                            <th>Reg. No.</th>
+                            <th>Name</th>
+                            <th>Present</th>
+                          </tr>
+                        </thead>
+                        <tbody id="student_data_table">
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer">
+                    <button type="button" class="btn btn-primary" id="save_attendance">
+                      Save Attendance
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-info ml-2" id="request_edit" style="display: none;">
+                      Request Edit Permission
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+$(document).ready(function(){
+    // Set today's date by default
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+    $("#attendance_date").val(today);
+    
+    // Variable to track if attendance exists for selected date
+    var attendanceExists = false;
+
+    function showToast(title, message, type) {
+        $('#toast-title').text(title);
+        $('#toast-message').text(message);
+        $('.toast').removeClass('bg-success bg-danger bg-warning').addClass('bg-' + type);
+        $('.toast').toast('show');
+    }
+    
+    // Reset the student data section when date or class subject changes
+    $("#class_subject, #attendance_date").on('change', function() {
+        $("#student_data").fadeOut();
+        attendanceExists = false;
+    });
+
+    $("#fetch_student").on('click', function(){
+        var class_subject = $("#class_subject").val();
+        var attendance_date = $("#attendance_date").val();
+
+        if(!class_subject || !attendance_date) {
+            showToast('Error', 'Please select both class subject and date', 'danger');
+            return;
+        }
+
+        var $button = $(this);
+        $button.find('.spinner-border').show();
+        $button.prop('disabled', true);
+
+        $.ajax({
+            url: '{% url "get_students" %}',
+            type: 'POST',
+            data: {
+                class_subject: class_subject,
+                attendance_date: attendance_date,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response){
+                try {
+                    var json_data = JSON.parse(response);
+                    if(json_data.length > 0){
+                        var html_data = "";
+                        for(var i = 0; i < json_data.length; i++){
+                            var student = json_data[i];
+                            html_data += '<tr>';
+                            html_data += '<td>' + student.registration_number + '</td>';
+                            html_data += '<td>' + student.name + '</td>';
+                            html_data += '<td><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input student_checkbox" id="student_' + student.id + '" value="' + student.id + '"' + (student.status ? ' checked' : '') + '><label class="custom-control-label" for="student_' + student.id + '"></label></div></td>';
+                            html_data += '</tr>';
+                        }
+                        $("#student_data_table").html(html_data);
+                        $("#student_data").fadeIn();
+                        
+                        // Check if attendance exists for this date
+                        $.ajax({
+                            url: '{% url "check_attendance_exists" %}',
+                            type: 'POST',
+                            data: {
+                                class_subject: class_subject,
+                                attendance_date: attendance_date,
+                                csrfmiddlewaretoken: '{{ csrf_token }}'
+                            },
+                            success: function(response) {
+                                if(response.exists) {
+                                    attendanceExists = true;
+                                    
+                                    if(response.locked) {
+                                        // Attendance is locked
+                                        showToast('Info', 'Attendance for this date is locked. You cannot make changes.', 'warning');
+                                        $("#save_attendance").text('Attendance Locked');
+                                        $("#save_attendance").removeClass('btn-primary').addClass('btn-secondary');
+                                        $("#save_attendance").prop('disabled', true);
+                                        $(".student_checkbox").prop('disabled', true);
+                                        $("#check_all, #uncheck_all").prop('disabled', true);
+                                        
+                                        // Show the request edit permission button
+                                        $("#request_edit").show();
+                                        
+                                        // Check if an edit request is already pending or approved
+                                        checkEditRequestStatus(class_subject, attendance_date);
+                                    } else {
+                                        // Attendance exists but not locked
+                                        showToast('Info', 'Attendance already exists for this date. You are updating existing attendance.', 'warning');
+                                        $("#save_attendance").text('Update Attendance');
+                                    }
+                                } else {
+                                    attendanceExists = false;
+                                    $("#save_attendance").text('Save Attendance');
+                                    $("#save_attendance").removeClass('btn-secondary').addClass('btn-primary');
+                                    $("#save_attendance").prop('disabled', false);
+                                    $(".student_checkbox").prop('disabled', false);
+                                    $("#check_all, #uncheck_all").prop('disabled', false);
+                                }
+                            }
+                        });
+                        
+                        showToast('Success', 'Students loaded successfully', 'success');
+                    } else {
+                        showToast('Info', 'No students found', 'warning');
+                    }
+                } catch(e) {
+                    console.error("Error parsing response:", e);
+                    showToast('Error', 'Invalid response from server', 'danger');
+                }
+            },
+            error: function(xhr, status, error){
+                console.error("AJAX Error:", error);
+                showToast('Error', 'Failed to fetch students: ' + error, 'danger');
+            },
+            complete: function(){
+                $button.find('.spinner-border').hide();
+                $button.prop('disabled', false);
+            }
+        });
+    });
+
+    $("#save_attendance").on('click', function(){
+        var student_data = [];
+        var class_subject = $("#class_subject").val();
+        var attendance_date = $("#attendance_date").val();
+
+        $(".student_checkbox").each(function(){
+            student_data.push({
+                student: $(this).val(),
+                status: $(this).prop('checked') ? 1 : 0
+            });
+        });
+
+        if(student_data.length === 0) {
+            showToast('Error', 'No students to save attendance for', 'danger');
+            return;
+        }
+
+        var $button = $(this);
+        $button.find('.spinner-border').show();
+        $button.prop('disabled', true);
+
+        $.ajax({
+            url: '{% url "save_attendance_data" %}',
+            type: 'POST',
+            data: {
+                class_subject: class_subject,
+                attendance_date: attendance_date,
+                student_data: JSON.stringify(student_data),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response){
+                if(response === "OK"){
+                    // Mark that attendance exists for this date now
+                    attendanceExists = true;
+                    
+                    showToast('Success', 'Attendance saved successfully. It is now locked for further edits.', 'success');
+                    
+                    // Disable save button after successful save
+                    $button.text('Attendance Locked');
+                    $button.removeClass('btn-primary').addClass('btn-secondary');
+                    $button.prop('disabled', true);
+                    
+                    // Disable the checkboxes
+                    $(".student_checkbox").prop('disabled', true);
+                    $("#check_all, #uncheck_all").prop('disabled', true);
+                    
+                    // Add a header notice
+                    $("#student_data .card-header").append('<span class="badge badge-warning ml-2">LOCKED</span>');
+                    
+                } else {
+                    showToast('Error', 'Failed to save attendance: ' + response, 'danger');
+                    // If there was an error and it mentions locked, disable the controls
+                    if(response.includes("locked")){
+                        $button.text('Attendance Locked');
+                        $button.removeClass('btn-primary').addClass('btn-secondary');
+                        $button.prop('disabled', true);
+                        $(".student_checkbox").prop('disabled', true);
+                        $("#check_all, #uncheck_all").prop('disabled', true);
+                    }
+                }
+            },
+            error: function(xhr, status, error){
+                console.error("Save Error:", error);
+                showToast('Error', 'Failed to save attendance: ' + error, 'danger');
+            },
+            complete: function(){
+                $button.find('.spinner-border').hide();
+            }
+        });
+    });
+
+    $("#uncheck_all").on('click', function() {
+        $(".student_checkbox").prop('checked', false);
+    });
+
+    $("#check_all").on('click', function() {
+        $(".student_checkbox").prop('checked', true);
+    });
+
+    // Function to check the status of any existing edit requests
+    function checkEditRequestStatus(class_subject, attendance_date) {
+        $.ajax({
+            url: '{% url "check_edit_request_status" %}',
+            type: 'POST',
+            data: {
+                class_subject: class_subject,
+                attendance_date: attendance_date,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if(response.status === 'pending') {
+                    // Request is pending
+                    $("#request_edit").text('Edit Request Pending');
+                    $("#request_edit").removeClass('btn-info').addClass('btn-warning');
+                    $("#request_edit").prop('disabled', true);
+                    showToast('Info', response.message, 'warning');
+                } else if(response.status === 'approved') {
+                    // Request is approved
+                    $("#request_edit").hide();
+                    $("#save_attendance").text('Save Attendance');
+                    $("#save_attendance").removeClass('btn-secondary').addClass('btn-primary');
+                    $("#save_attendance").prop('disabled', false);
+                    $(".student_checkbox").prop('disabled', false);
+                    $("#check_all, #uncheck_all").prop('disabled', false);
+                    showToast('Success', response.message, 'success');
+                } else if(response.status === 'rejected') {
+                    // Request was rejected
+                    $("#request_edit").text('Request Edit Permission');
+                    $("#request_edit").removeClass('btn-warning').addClass('btn-info');
+                    $("#request_edit").prop('disabled', false);
+                    showToast('Info', response.message, 'warning');
+                }
+            },
+            error: function() {
+                showToast('Error', 'Failed to check edit request status', 'danger');
+            }
+        });
+    }
+    
+    // Request Edit Permission button click handler
+    $("#request_edit").on('click', function() {
+        var class_subject = $("#class_subject").val();
+        var attendance_date = $("#attendance_date").val();
+        
+        if (confirm("Are you sure you want to request permission to edit this attendance record?")) {
+            var $button = $(this);
+            $button.find('.spinner-border').show();
+            $button.prop('disabled', true);
+            
+            $.ajax({
+                url: '{% url "request_attendance_edit" %}',
+                type: 'POST',
+                data: {
+                    class_subject: class_subject,
+                    attendance_date: attendance_date,
+                    request_message: "Request to edit attendance",
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    $button.find('.spinner-border').hide();
+                    if(response.status) {
+                        // Request submitted successfully
+                        $("#request_edit").text('Edit Request Pending');
+                        $("#request_edit").removeClass('btn-info').addClass('btn-warning');
+                        $("#request_edit").prop('disabled', true);
+                        showToast('Success', response.message, 'success');
+                    } else {
+                        // Error submitting request
+                        $button.prop('disabled', false);
+                        showToast('Error', response.message, 'danger');
+                    }
+                },
+                error: function() {
+                    $button.find('.spinner-border').hide();
+                    $button.prop('disabled', false);
+                    showToast('Error', 'Failed to submit edit request', 'danger');
+                }
+            });
+        }
+    });
+    
+    // Poll for edit request status updates every 10 seconds
+    setInterval(function() {
+        var class_subject = $("#class_subject").val();
+        var attendance_date = $("#attendance_date").val();
+        
+        if(attendanceExists && $("#request_edit").is(":visible")) {
+            checkEditRequestStatus(class_subject, attendance_date);
+        }
+    }, 10000);
+
+    // Handle Django messages
+    var messages = JSON.parse('{{ messages|safe|default:"[]" }}');
+    messages.forEach(function(message) {
+        showToast('Notification', message, 'info');
+    });
+});
+</script>
+{% endblock custom_js %}

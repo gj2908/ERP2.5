@@ -1,0 +1,134 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+{% endblock page_title %}
+
+{% block breadcrumb %}
+{% endblock breadcrumb %}
+
+{% block main_content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Add Class</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form role="form" action="{% url 'add_class_save' %}" method="post">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Session</label>
+                                <select class="form-control" name="session" id="session" required>
+                                    <option value="">Select Session</option>
+                                    {% for session in sessions %}
+                                    <option value="{{ session.id }}">{{ session.start_year }} to {{ session.end_year }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Course</label>
+                                <select class="form-control" name="course" id="course" required>
+                                    <option value="">Select Course</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Course Session</label>
+                                <select class="form-control" name="course_session" id="course_session" required>
+                                    <option value="">Select Course Session</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Section</label>
+                                <input type="text" class="form-control" name="section" placeholder="Enter Section (e.g., A, B, C)" required>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary btn-block">Add Class</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+    $(document).ready(function() {
+        // When session changes, fetch courses
+        $('#session').change(function() {
+            var session_id = $(this).val();
+            if (session_id != '') {
+                $.ajax({
+                    url: '{% url "get_courses_by_session" %}',
+                    type: 'POST',
+                    data: {
+                        session_id: session_id
+                    },
+                    success: function(data) {
+                        var courseSelect = $('#course');
+                        courseSelect.empty();
+                        courseSelect.append('<option value="">Select Course</option>');
+                        
+                        data.courses.forEach(function(course) {
+                            courseSelect.append('<option value="' + course.id + '">' + course.course_name + '</option>');
+                        });
+                        
+                        // Clear course session dropdown
+                        $('#course_session').empty();
+                        $('#course_session').append('<option value="">Select Course Session</option>');
+                    }
+                });
+            } else {
+                $('#course').empty();
+                $('#course').append('<option value="">Select Course</option>');
+                $('#course_session').empty();
+                $('#course_session').append('<option value="">Select Course Session</option>');
+            }
+        });
+        
+        // When course changes, fetch course sessions
+        $('#course').change(function() {
+            var session_id = $('#session').val();
+            var course_id = $(this).val();
+            
+            if (session_id != '' && course_id != '') {
+                $.ajax({
+                    url: '{% url "get_courses_by_session" %}',
+                    type: 'POST',
+                    data: {
+                        session_id: session_id,
+                        course_id: course_id
+                    },
+                    success: function(data) {
+                        var courseSessionSelect = $('#course_session');
+                        courseSessionSelect.empty();
+                        courseSessionSelect.append('<option value="">Select Course Session</option>');
+                        
+                        if (data.course_sessions) {
+                            data.course_sessions.forEach(function(courseSession) {
+                                courseSessionSelect.append('<option value="' + courseSession.id + '">' + 
+                                    courseSession.course.course_name + ' (' + 
+                                    courseSession.session_year.start_year + ' to ' +
+                                    courseSession.session_year.end_year + ')</option>');
+                            });
+                        }
+                    }
+                });
+            } else {
+                $('#course_session').empty();
+                $('#course_session').append('<option value="">Select Course Session</option>');
+            }
+        });
+    });
+</script>
+{% endblock custom_js %} 

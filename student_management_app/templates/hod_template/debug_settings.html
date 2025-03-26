@@ -1,0 +1,368 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+System Configuration
+{% endblock page_title %}
+
+{% block main_content %}
+<section class="content">
+    <div class="container-fluid">
+        <!-- System Settings Card -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">System Settings</h3>
+                    </div>
+                    <form method="post" action="{% url 'debug_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="system_settings_form" value="1">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="text-muted">
+                                        Configure which signup options are available on the login page.
+                                    </p>
+                                    
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th width="40%">Option</th>
+                                                    <th width="20%">Status</th>
+                                                    <th width="40%">Link</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Admin Signup</td>
+                                                    <td>
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="enable_admin_signup" name="enable_admin_signup" {% if enable_admin_signup %}checked{% endif %}>
+                                                            <label class="custom-control-label" for="enable_admin_signup">{% if enable_admin_signup %}Enabled{% else %}Disabled{% endif %}</label>
+                                                        </div>
+                                                    </td>
+                                                    <td id="admin_link_container">
+                                                        {% if enable_admin_signup %}
+                                                        <a href="{% url 'signup_admin' %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                            <i class="fas fa-external-link-alt"></i> Admin Signup Link
+                                                        </a>
+                                                        {% else %}
+                                                        <span class="text-muted">Disabled</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Staff Signup</td>
+                                                    <td>
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="enable_staff_signup" name="enable_staff_signup" {% if enable_staff_signup %}checked{% endif %}>
+                                                            <label class="custom-control-label" for="enable_staff_signup">{% if enable_staff_signup %}Enabled{% else %}Disabled{% endif %}</label>
+                                                        </div>
+                                                    </td>
+                                                    <td id="staff_link_container">
+                                                        {% if enable_staff_signup %}
+                                                        <a href="{% url 'signup_staff' %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                            <i class="fas fa-external-link-alt"></i> Staff Signup Link
+                                                        </a>
+                                                        {% else %}
+                                                        <span class="text-muted">Disabled</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Student Signup</td>
+                                                    <td>
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="enable_student_signup" name="enable_student_signup" {% if enable_student_signup %}checked{% endif %}>
+                                                            <label class="custom-control-label" for="enable_student_signup">{% if enable_student_signup %}Enabled{% else %}Disabled{% endif %}</label>
+                                                        </div>
+                                                    </td>
+                                                    <td id="student_link_container">
+                                                        {% if enable_student_signup %}
+                                                        <a href="{% url 'signup_student' %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                            <i class="fas fa-external-link-alt"></i> Student Signup Link
+                                                        </a>
+                                                        {% else %}
+                                                        <span class="text-muted">Disabled</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-info">Save System Settings</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Environment Settings Card -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Environment Settings</h3>
+                    </div>
+                    <form role="form" action="{% url 'save_debug_settings' %}" method="post">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <!-- Editable Settings -->
+                            <h5>Editable Settings</h5>
+                            <!-- Fields in sequence as requested -->
+                            <div class="form-group">
+                                <label for="email_host_user">Email Host User <small class="text-danger">(Requires quotes)</small></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">"</span>
+                                    </div>
+                                    <input type="email" class="form-control" id="email_host_user" name="email_host_user" value="{{ email_host_user|cut:'"' }}" required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email_host_password">Email Host Password <small class="text-danger">(Requires quotes)</small></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">"</span>
+                                    </div>
+                                    <input type="password" class="form-control" id="email_host_password" name="email_host_password" value="{{ email_host_password|cut:'"' }}" required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">"</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="debug">Debug Mode</label>
+                                <select class="form-control" id="debug" name="debug" required>
+                                    <option value="True" {% if debug == "True" %}selected{% endif %}>True</option>
+                                    <option value="False" {% if debug == "False" %}selected{% endif %}>False</option>
+                                </select>
+                                <small class="text-danger">WARNING: Debug mode should be set to False in production environments.</small>
+                                <div class="mt-2 p-3 bg-light rounded">
+                                    <strong>Effects of setting DEBUG=False:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li>Django's error pages will be disabled (404, 500, etc.)</li>
+                                        <li>Error details will not be shown to users</li>
+                                        <li>Static files may need to be served differently</li>
+                                        <li>Some URLs will be properly protected</li>
+                                        <li>The server may need to be restarted for changes to take effect</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="domain_name">Domain Name</label>
+                                <input type="text" class="form-control" id="domain_name" name="domain_name" value="{{ domain_name }}" required>
+                            </div>
+                            
+                            <!-- Non-Editable Settings -->
+                            <hr>
+                            <h5>Read-only Settings</h5>
+                            
+                            <!-- Secret keys with masked display -->
+                            <div class="form-group">
+                                <label>SECRET_KEY <small class="text-muted">(used for cryptographic signing in Django)</small></label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control bg-light" value="{{ secret_key }}" readonly>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggleSecretKey">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>RECAPTCHA_SECRET_KEY</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control bg-light" value="{{ recaptcha_secret_key }}" readonly>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggleRecaptchaKey">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Other read-only fields -->
+                            <div class="form-group">
+                                <label>PASSWORD_RESET_TIMEOUT <small class="text-muted">(minutes)</small></label>
+                                <input type="text" class="form-control bg-light" value="{{ password_reset_timeout }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>SESSION_IDLE_TIMEOUT <small class="text-muted">(minutes)</small></label>
+                                <input type="text" class="form-control bg-light" value="{{ session_idle_timeout }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>EMAIL_HOST <small class="text-muted">(SMTP server for sending emails)</small></label>
+                                <input type="text" class="form-control bg-light" value="{{ email_host }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>EMAIL_PORT</label>
+                                <input type="text" class="form-control bg-light" value="{{ email_port }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>EMAIL_USE_TLS</label>
+                                <input type="text" class="form-control bg-light" value="{{ email_use_tls }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>DEFAULT_FROM_EMAIL <small class="text-muted">(default sender for emails)</small></label>
+                                <input type="text" class="form-control bg-light" value="{{ default_from_email }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>DB_ENGINE <small class="text-muted">(database engine)</small></label>
+                                <input type="text" class="form-control bg-light" value="{{ db_engine }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>DB_NAME <small class="text-muted">(database file or name)</small></label>
+                                <input type="text" class="form-control bg-light" value="{{ db_name }}" readonly>
+                            </div>
+                            
+                            <!-- Hidden inputs to preserve values -->
+                            <input type="hidden" name="secret_key" value="{{ secret_key }}">
+                            <input type="hidden" name="recaptcha_secret_key" value="{{ recaptcha_secret_key }}">
+                            <input type="hidden" name="password_reset_timeout" value="{{ password_reset_timeout }}">
+                            <input type="hidden" name="session_idle_timeout" value="{{ session_idle_timeout }}">
+                            <input type="hidden" name="email_host" value="{{ email_host }}">
+                            <input type="hidden" name="email_port" value="{{ email_port }}">
+                            <input type="hidden" name="email_use_tls" value="{{ email_use_tls }}">
+                            <input type="hidden" name="default_from_email" value="{{ default_from_email }}">
+                            <input type="hidden" name="db_engine" value="{{ db_engine }}">
+                            <input type="hidden" name="db_name" value="{{ db_name }}">
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Save Environment Settings</button>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle"></i> Note: Only the editable settings above will be updated. Other settings can only be changed manually in the .env file.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+    $(document).ready(function() {
+        // Show success messages
+        {% if messages %}
+            {% for message in messages %}
+                toastr.success('{{ message }}');
+            {% endfor %}
+        {% endif %}
+
+        // Toggle signup links when switches are changed
+        $('#enable_admin_signup').change(function() {
+            const container = $('#admin_link_container');
+            const isChecked = $(this).is(':checked');
+            $(this).next('label').text(isChecked ? 'Enabled' : 'Disabled');
+            
+            if(isChecked) {
+                container.html('<a href="{% url "signup_admin" %}" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fas fa-external-link-alt"></i> Admin Signup Link</a>');
+            } else {
+                container.html('<span class="text-muted">Disabled</span>');
+            }
+        });
+        
+        $('#enable_staff_signup').change(function() {
+            const container = $('#staff_link_container');
+            const isChecked = $(this).is(':checked');
+            $(this).next('label').text(isChecked ? 'Enabled' : 'Disabled');
+            
+            if(isChecked) {
+                container.html('<a href="{% url "signup_staff" %}" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fas fa-external-link-alt"></i> Staff Signup Link</a>');
+            } else {
+                container.html('<span class="text-muted">Disabled</span>');
+            }
+        });
+        
+        $('#enable_student_signup').change(function() {
+            const container = $('#student_link_container');
+            const isChecked = $(this).is(':checked');
+            $(this).next('label').text(isChecked ? 'Enabled' : 'Disabled');
+            
+            if(isChecked) {
+                container.html('<a href="{% url "signup_student" %}" class="btn btn-sm btn-outline-primary" target="_blank"><i class="fas fa-external-link-alt"></i> Student Signup Link</a>');
+            } else {
+                container.html('<span class="text-muted">Disabled</span>');
+            }
+        });
+
+        // Form validation for env settings
+        $('form[action="{% url "save_debug_settings" %}"]').on('submit', function(e) {
+            var emailHostUser = $('#email_host_user').val();
+            var emailHostPassword = $('#email_host_password').val();
+            var debug = $('#debug').val();
+            var domainName = $('#domain_name').val();
+            
+            if (!emailHostUser || !emailHostPassword || !debug || !domainName) {
+                e.preventDefault();
+                alert('Please fill in all editable fields');
+                return false;
+            }
+            
+            // Add confirmation
+            if (!confirm('Are you sure you want to update these settings? Application may need to be restarted for changes to take effect.')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Toggle SECRET_KEY visibility
+        $('#toggleSecretKey').on('click', function() {
+            const secretKeyField = $(this).closest('.input-group').find('input');
+            const icon = $(this).find('i');
+            
+            if (secretKeyField.attr('type') === 'password') {
+                secretKeyField.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                secretKeyField.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        
+        // Toggle RECAPTCHA_SECRET_KEY visibility
+        $('#toggleRecaptchaKey').on('click', function() {
+            const secretKeyField = $(this).closest('.input-group').find('input');
+            const icon = $(this).find('i');
+            
+            if (secretKeyField.attr('type') === 'password') {
+                secretKeyField.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                secretKeyField.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+
+        // Show/hide debug warning box based on selection
+        $('#debug').change(function() {
+            const debugValue = $(this).val();
+            const warningBox = $(this).siblings('.mt-2.p-3.bg-light');
+            
+            if (debugValue === 'True') {
+                warningBox.removeClass('bg-light').addClass('bg-warning');
+                $(this).siblings('small.text-danger').text('WARNING: Debug mode is set to True. This should NEVER be used in production!');
+            } else {
+                warningBox.removeClass('bg-warning').addClass('bg-light');
+                $(this).siblings('small.text-danger').text('WARNING: Debug mode should be set to False in production environments.');
+            }
+        });
+        
+        // Initialize debug warning box color based on current value
+        if ($('#debug').val() === 'True') {
+            $('#debug').siblings('.mt-2.p-3.bg-light').removeClass('bg-light').addClass('bg-warning');
+            $('#debug').siblings('small.text-danger').text('WARNING: Debug mode is set to True. This should NEVER be used in production!');
+        }
+    });
+</script>
+{% endblock custom_js %} 

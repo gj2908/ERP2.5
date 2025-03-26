@@ -1,0 +1,153 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+System Logs
+{% endblock page_title %}
+
+{% block main_content %}
+<section class="content">
+    <div class="container-fluid">
+        <!-- Error Logs Card -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">Error Logs</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <p><i class="fas fa-info-circle"></i> This page shows the system error logs. Environment settings can only be modified by updating the server configuration files directly.</p>
+                        </div>
+                        
+                        <!-- Terminal Output Section -->
+                        <div class="form-group">
+                            <label for="terminalOutput"><i class="fas fa-terminal"></i> Recent Terminal Output</label>
+                            <textarea class="form-control bg-dark text-light" id="terminalOutput" rows="8" readonly style="font-family: monospace;">{{ terminal_output|default:"No terminal output captured." }}</textarea>
+                        </div>
+                        
+                        <!-- Database Error Logs -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="errorLogsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Level</th>
+                                        <th>Location</th>
+                                        <th>Description</th>
+                                        <th>User</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for log in error_logs %}
+                                <tr class="{% if log.level == 'CRITICAL' %}table-danger{% elif log.level == 'ERROR' %}table-warning{% endif %}">
+                                    <td>{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                                    <td><span class="badge {% if log.level == 'CRITICAL' %}badge-danger{% elif log.level == 'ERROR' %}badge-warning{% elif log.level == 'INFO' %}badge-info{% else %}badge-secondary{% endif %}">{{ log.level }}</span></td>
+                                    <td>{{ log.location }}</td>
+                                    <td>{{ log.description|truncatechars:100 }}</td>
+                                    <td>{{ log.user.username|default:"Anonymous" }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#logModal{{ log.id }}">
+                                            View Details
+                                        </button>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Log Details Modal -->
+                                <div class="modal fade" id="logModal{{ log.id }}" tabindex="-1" role="dialog" aria-labelledby="logModalLabel{{ log.id }}">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="logModalLabel{{ log.id }}">Error Log Details</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <dl class="row">
+                                                    <dt class="col-sm-3">Timestamp</dt>
+                                                    <dd class="col-sm-9">{{ log.timestamp|date:"Y-m-d H:i:s" }}</dd>
+                                                    
+                                                    <dt class="col-sm-3">Level</dt>
+                                                    <dd class="col-sm-9">{{ log.level }}</dd>
+                                                    
+                                                    <dt class="col-sm-3">Location</dt>
+                                                    <dd class="col-sm-9">{{ log.location }}</dd>
+                                                    
+                                                    <dt class="col-sm-3">Description</dt>
+                                                    <dd class="col-sm-9">{{ log.description }}</dd>
+                                                    
+                                                    <dt class="col-sm-3">User</dt>
+                                                    <dd class="col-sm-9">{{ log.user.username|default:"Anonymous" }}</dd>
+                                                    
+                                                    <dt class="col-sm-3">IP Address</dt>
+                                                    <dd class="col-sm-9">{{ log.ip_address|default:"N/A" }}</dd>
+                                                    
+                                                    <dt class="col-sm-3">User Agent</dt>
+                                                    <dd class="col-sm-9">{{ log.user_agent|default:"N/A" }}</dd>
+                                                    
+                                                    {% if log.stack_trace %}
+                                                    <dt class="col-sm-3">Stack Trace</dt>
+                                                    <dd class="col-sm-9">
+                                                        <pre class="bg-light p-2"><code>{{ log.stack_trace }}</code></pre>
+                                                    </dd>
+                                                    {% endif %}
+                                                    
+                                                    {% if log.additional_data %}
+                                                    <dt class="col-sm-3">Additional Data</dt>
+                                                    <dd class="col-sm-9">
+                                                        <pre class="bg-light p-2"><code>{{ log.additional_data|pprint }}</code></pre>
+                                                    </dd>
+                                                    {% endif %}
+                                                </dl>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No error logs found</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+$(document).ready(function() {
+    // Initialize DataTable for error logs
+    $('#errorLogsTable').DataTable({
+        "order": [[0, "desc"]], // Sort by timestamp descending
+        "pageLength": 10,
+        "responsive": true,
+        "lengthChange": true,
+        "autoWidth": false
+    });
+    
+    // Refresh terminal output automatically every 30 seconds
+    function refreshTerminalOutput() {
+        $.ajax({
+            url: '{% url "get_terminal_output" %}',
+            type: 'GET',
+            success: function(data) {
+                $('#terminalOutput').val(data.output);
+            }
+        });
+    }
+    
+    // Initial refresh and then set interval
+    refreshTerminalOutput();
+    setInterval(refreshTerminalOutput, 30000);
+});
+</script>
+{% endblock custom_js %} 

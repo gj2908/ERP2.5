@@ -1,0 +1,146 @@
+{% extends 'student_template/base_template.html' %}
+{% block page_title %}
+{% endblock page_title %}
+
+{% block custom_css %}
+<style>
+  /* Responsive card styles */
+  .notification-card {
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+  }
+
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  .notification-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .notification-time {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .notification-message {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Empty state styles */
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .empty-state i {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .notification-item {
+      padding: 0.75rem;
+    }
+
+    .card-header {
+      padding: 0.75rem;
+    }
+
+    .btn-clear {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+  }
+</style>
+{% endblock custom_css %}
+
+{% block main_content %}
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card notification-card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="card-title">All Notifications</h3>
+              {% if notifications %}
+              <button type="button" class="btn btn-danger btn-clear" id="clearNotifications">
+                <i class="fas fa-trash"></i> Clear All
+              </button>
+              {% endif %}
+            </div>
+          </div>
+          <div class="card-body p-0">
+            {% if notifications %}
+              <div class="list-group">
+                {% for notification in notifications %}
+                  <div class="notification-item">
+                    <div class="notification-message">
+                      {{ notification.message }}
+                    </div>
+                    <div class="notification-time">
+                      <i class="far fa-clock"></i> {{ notification.created_at|date:"jS M Y, g:i A" }}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="empty-state">
+                <i class="far fa-bell-slash"></i>
+                <h4>No Notifications</h4>
+                <p class="text-muted">You don't have any notifications at the moment.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+$(document).ready(function() {
+  // Clear notifications
+  $('#clearNotifications').click(function() {
+    if (confirm('Are you sure you want to clear all notifications?')) {
+      $.ajax({
+        url: '{% url "clear_student_notifications" %}',
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function(response) {
+          if (response.status === 'success') {
+            // Reload the page to show empty state
+            location.reload();
+          }
+        },
+        error: function() {
+          alert('Failed to clear notifications. Please try again.');
+        }
+      });
+    }
+  });
+});
+</script>
+{% endblock custom_js %}
+

@@ -1,0 +1,249 @@
+{% extends 'student_template/base_template.html' %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Home</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item active">Home</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Info boxes -->
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>{{ total_attendance }}</h3>
+                            <p>Total Attendance</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <a href="{% url 'student_view_attendance' %}" class="small-box-footer">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ total_absent }}</h3>
+                            <p>Absent</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <a href="{% url 'student_view_attendance' %}" class="small-box-footer">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>{{ total_present }}</h3>
+                            <p>Present</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <a href="{% url 'student_view_attendance' %}" class="small-box-footer">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>{{ total_subjects }}</h3>
+                            <p>Total Subjects</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Attendance Chart -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie mr-1"></i>
+                                Attendance Chart
+                            </h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="attendanceChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Statistics -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-bar mr-1"></i>
+                                Attendance Statistics
+                            </h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="attendanceStats" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Information -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Academic Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table">
+                                        <tr>
+                                            <th>Course:</th>
+                                            <td>{{ course.course_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Academic Year:</th>
+                                            <td>{{ session_year }}</td>
+                                        </tr>
+                                        {% if current_class %}
+                                        <tr>
+                                            <th>Class Section:</th>
+                                            <td>{{ current_class.section }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Subjects</h5>
+                                    {% if subjects %}
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Subject Name</th>
+                                                    <th>Teacher</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for subject in subjects %}
+                                                <tr>
+                                                    <td>{{ subject.subject_name }}</td>
+                                                    <td>
+                                                        {% if subject.staff_id %}
+                                                            {{ subject.staff_id.first_name }} {{ subject.staff_id.last_name }}
+                                                        {% else %}
+                                                            Not Assigned
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <p class="text-muted">No subjects assigned yet.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+// Attendance Pie Chart
+var ctx = document.getElementById('attendanceChart').getContext('2d');
+var attendanceChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Absent', 'Present', 'Total'],
+        datasets: [{
+            data: [{{ total_absent }}, {{ total_present }}, {{ total_attendance }}],
+            backgroundColor: [
+                '#dc3545',
+                '#28a745',
+                '#ffc107'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// Attendance Statistics Bar Chart
+var ctx2 = document.getElementById('attendanceStats').getContext('2d');
+var attendanceStats = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: [{% for subject in subjects %}'{{ subject.subject_name }}',{% endfor %}],
+        datasets: [{
+            label: 'Present in Class',
+            data: [{% for subject in subjects %}{{ subject.attendance_present|default:0 }},{% endfor %}],
+            backgroundColor: '#17a2b8'
+        }, {
+            label: 'Absent in Class',
+            data: [{% for subject in subjects %}{{ subject.attendance_absent|default:0 }},{% endfor %}],
+            backgroundColor: '#6c757d'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,125 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header bg-primary">
+                    <h3 class="card-title text-white">Subject Management</h3>
+                    <div class="card-tools">
+                      <a href="{% url 'add_subject' %}" class="btn btn-light"><i class="fas fa-plus"></i> Add Subject</a>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    {% if subject_groups %}
+                      <p class="text-muted mb-3">
+                        <i class="fas fa-info-circle"></i> The subjects are grouped by name. Click on a subject group to view all course-session combinations where it's offered.
+                      </p>
+                      
+                      <div class="accordion" id="subjectAccordion">
+                        {% for group in subject_groups %}
+                          <div class="card mb-2">
+                            <div class="card-header {% if forloop.first %}bg-light{% endif %}" id="heading{{ forloop.counter }}">
+                              <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left d-flex justify-content-between align-items-center" type="button" 
+                                        data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" 
+                                        aria-expanded="{{ forloop.first|yesno:'true,false' }}" aria-controls="collapse{{ forloop.counter }}">
+                                  <span class="font-weight-bold">{{ group.name }}</span>
+                                  <span class="badge badge-primary badge-pill">{{ group.count }}</span>
+                                </button>
+                              </h2>
+                            </div>
+                            
+                            <div id="collapse{{ forloop.counter }}" class="collapse {% if forloop.first %}show{% endif %}" 
+                                 aria-labelledby="heading{{ forloop.counter }}" data-parent="#subjectAccordion">
+                              <div class="card-body p-0">
+                                <table class="table table-striped table-hover mb-0">
+                                  <thead class="thead-light">
+                                    <tr>
+                                      <th>Course</th>
+                                      <th>Session</th>
+                                      <th>Created</th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {% for subject in group.subjects %}
+                                      <tr>
+                                        <td>
+                                          <span class="badge badge-info">
+                                            {{ subject.course_session.course.course_name }}
+                                          </span>
+                                        </td>
+                                        <td>
+                                          <span class="badge badge-secondary">
+                                            {{ subject.course_session.session_year }}
+                                          </span>
+                                        </td>
+                                        <td>
+                                          <small class="text-muted">
+                                            {{ subject.created_at|date:"M d, Y" }}
+                                          </small>
+                                        </td>
+                                        <td>
+                                          <div class="btn-group">
+                                            <a href="{% url 'edit_subject' subject.id %}" class="btn btn-sm btn-outline-success" data-toggle="tooltip" title="Edit Subject">
+                                              <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'delete_subject' subject.id %}" class="btn btn-sm btn-outline-danger" 
+                                              data-toggle="tooltip" title="Delete Subject"
+                                              onclick="return confirm('Are you sure you want to delete this subject ({{ subject.subject_name }} - {{ subject.course_session.course.course_name }} {{ subject.course_session.session_year }})?')">
+                                              <i class="fas fa-trash"></i>
+                                            </a>
+                                          </div>
+                                          <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                                        </td>
+                                      </tr>
+                                    {% endfor %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      <div class="alert alert-info">
+                        <h5><i class="icon fas fa-info"></i> No subjects found</h5>
+                        <p>No subjects have been added yet. Click the "Add Subject" button to create your first subject.</p>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+  $(document).ready(function() {
+    // Enable tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Highlight row on hover
+    $('tbody tr').hover(
+      function() {
+        $(this).addClass('bg-light');
+      },
+      function() {
+        $(this).removeClass('bg-light');
+      }
+    );
+  });
+</script>
+{% endblock custom_js %}
+

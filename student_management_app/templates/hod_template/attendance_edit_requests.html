@@ -1,0 +1,191 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Attendance Edit Requests
+{% endblock page_title %}
+
+{% block breadcrumb %}
+Attendance Management > Edit Requests
+{% endblock breadcrumb %}
+
+{% block main_content %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Pending Attendance Edit Requests</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body table-responsive">
+            {% if edit_requests %}
+            <table id="pendingRequests" class="table table-hover table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Staff</th>
+                  <th>Subject</th>
+                  <th>Class</th>
+                  <th>Date</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Requested On</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for request in edit_requests %}
+                  {% if request.status == 'pending' %}
+                  <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.staff.admin.first_name }} {{ request.staff.admin.last_name }}</td>
+                    <td>{{ request.attendance.class_subject.subject.subject_name }}</td>
+                    <td>{{ request.attendance.class_subject.class_id.class_name }}</td>
+                    <td>{{ request.attendance.attendance_date }}</td>
+                    <td>{{ request.request_message }}</td>
+                    <td>
+                      <span class="badge badge-warning">{{ request.status|title }}</span>
+                    </td>
+                    <td>{{ request.created_at }}</td>
+                    <td>
+                      <div class="btn-group">
+                        <form action="{% url 'approve_attendance_edit' request.id %}" method="post" style="display: inline;">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-success mr-1">
+                            <i class="fas fa-check"></i> Approve
+                          </button>
+                        </form>
+                        <form action="{% url 'reject_attendance_edit' request.id %}" method="post" style="display: inline;">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-times"></i> Reject
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i> No attendance edit requests found.
+            </div>
+            {% endif %}
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Processed Attendance Edit Requests</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+              <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                <i class="fas fa-expand"></i>
+              </button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body table-responsive">
+            {% if edit_requests %}
+            <table id="processedRequests" class="table table-hover table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Staff</th>
+                  <th>Subject</th>
+                  <th>Class</th>
+                  <th>Date</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Requested On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for request in edit_requests %}
+                  {% if request.status != 'pending' %}
+                  <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.staff.admin.first_name }} {{ request.staff.admin.last_name }}</td>
+                    <td>{{ request.attendance.class_subject.subject.subject_name }}</td>
+                    <td>{{ request.attendance.class_subject.class_id.class_name }}</td>
+                    <td>{{ request.attendance.attendance_date }}</td>
+                    <td>{{ request.request_message }}</td>
+                    <td>
+                      {% if request.status == 'approved' %}
+                        <span class="badge badge-success">{{ request.status|title }}</span>
+                      {% else %}
+                        <span class="badge badge-danger">{{ request.status|title }}</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ request.created_at }}</td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i> No processed attendance edit requests found.
+            </div>
+            {% endif %}
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <!-- /.row -->
+  </div>
+  <!-- /.container-fluid -->
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+  $(document).ready(function() {
+    // Initialize DataTables
+    $('#pendingRequests').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "order": [[7, 'desc']] // Sort by requested date by default
+    });
+    
+    $('#processedRequests').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "order": [[7, 'desc']] // Sort by requested date by default
+    });
+  });
+</script>
+{% endblock custom_js %} 

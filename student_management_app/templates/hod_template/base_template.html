@@ -1,0 +1,998 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>SRM Admin Dashboard</title>
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/en/f/fe/Srmseal.png">
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static "plugins/fontawesome-free/css/all.min.css" %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="{% static "plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" %}">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static "plugins/icheck-bootstrap/icheck-bootstrap.min.css" %}">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static "plugins/jqvmap/jqvmap.min.css" %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static "dist/css/adminlte.min.css" %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static "plugins/overlayScrollbars/css/OverlayScrollbars.min.css" %}">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static "plugins/daterangepicker/daterangepicker.css" %}">
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static "plugins/summernote/summernote-bs4.css" %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <!-- Toastr CSS for notifications -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+  <!-- Mobile Responsive CSS -->
+  <link rel="stylesheet" href="{% static "css/mobile-responsive.css" %}">
+  <!-- Custom CSS -->
+  <style>
+    :root {
+      --srm-blue: #003b7c;
+      --srm-orange: #f26522;
+      --primary-gradient: linear-gradient(135deg, var(--srm-blue) 0%, #002551 100%);
+      --primary-color: var(--srm-blue);
+      --secondary-color: var(--srm-orange);
+      --accent-color: var(--srm-orange);
+      --light-bg: #f8f9fa;
+      --dark-text: #2c3e50;
+      --light-text: #ecf0f1;
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --danger-color: #f44336;
+      --info-color: #2196f3;
+      --sidebar-text: #1a2035;
+      --sidebar-icon: #1a2035;
+      --shadow-sm: 0 2px 10px rgba(0,0,0,0.1);
+      --shadow-md: 0 5px 15px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+      --border-radius: 8px;
+      --transition-fast: 0.25s ease;
+      --transition-normal: 0.35s ease;
+      --transition-slow: 0.5s ease;
+    }
+    
+    body, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+      font-family: 'Poppins', 'Source Sans Pro', sans-serif;
+    }
+    
+    /* Global styling */
+    body {
+      background-color: var(--light-bg);
+      color: var(--dark-text);
+    }
+    
+    /* Navbar styling */
+    .navbar-primary {
+      background: var(--primary-gradient) !important;
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Cards styling */
+    .card {
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-normal);
+      border: none;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .card-header {
+      border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+      border-bottom: 2px solid rgba(0,0,0,0.05);
+      background-color: white;
+      padding: 1rem 1.5rem;
+    }
+    
+    .card-header .card-title {
+      margin-bottom: 0;
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .main-header {
+      background: var(--primary-gradient) !important;
+      border-bottom: none !important;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .navbar-nav .nav-link {
+      padding: 0.75rem 1rem;
+      color: var(--light-text) !important;
+    }
+    
+    .navbar-nav .nav-link:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    
+    /* Buttons styling */
+    .btn {
+      border-radius: 6px;
+      font-weight: 500;
+      padding: 0.5rem 1.25rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 6px;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.3s ease;
+    }
+    
+    .btn:hover:after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    
+    .btn-primary, .btn-primary.disabled {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover, .btn-primary:focus {
+      background-color: #002d60;
+      border-color: #002d60;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary, .btn-secondary.disabled {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    
+    .btn-secondary:hover, .btn-secondary:focus {
+      background-color: #e55511;
+      border-color: #e55511;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .btn-success, .btn-success.disabled {
+      background-color: var(--success-color);
+      border-color: var(--success-color);
+    }
+    
+    .btn-success:hover, .btn-success:focus {
+      background-color: #43a047;
+      border-color: #43a047;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .btn-danger, .btn-danger.disabled {
+      background-color: var(--danger-color);
+      border-color: var(--danger-color);
+    }
+    
+    .btn-danger:hover, .btn-danger:focus {
+      background-color: #e53935;
+      border-color: #e53935;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .btn-warning, .btn-warning.disabled {
+      background-color: var(--warning-color);
+      border-color: var(--warning-color);
+      color: white;
+    }
+    
+    .btn-warning:hover, .btn-warning:focus {
+      background-color: #fb8c00;
+      border-color: #fb8c00;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .btn-info, .btn-info.disabled {
+      background-color: var(--info-color);
+      border-color: var(--info-color);
+    }
+    
+    .btn-info:hover, .btn-info:focus {
+      background-color: #1e88e5;
+      border-color: #1e88e5;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+    
+    /* Sidebar Styling */
+    .main-sidebar {
+      box-shadow: var(--shadow-lg);
+      background: white;
+    }
+    
+    .sidebar-dark-primary {
+      background: white;
+    }
+    
+    .sidebar-dark-primary .nav-sidebar .nav-item .nav-link {
+      color: var(--sidebar-text);
+    }
+    
+    .sidebar-dark-primary .nav-sidebar .nav-item .nav-link:hover {
+      color: var(--primary-color);
+      background-color: rgba(0, 59, 124, 0.1);
+    }
+    
+    .sidebar-dark-primary .nav-sidebar .nav-item .nav-link.active {
+      color: white;
+      background: var(--primary-gradient);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .sidebar-dark-primary .nav-header {
+      color: var(--primary-color);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+      margin-top: 10px;
+    }
+    
+    .nav-sidebar .nav-link > .right,
+    .nav-sidebar .nav-link > p > .right {
+      top: 0.9rem;
+    }
+    
+    .brand-link {
+      border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+      background: var(--primary-gradient);
+      color: white !important;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .brand-text {
+      font-weight: 600 !important;
+      font-size: 1.2rem;
+    }
+    
+    .user-panel {
+      border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+    }
+    
+    .user-panel .info a {
+      color: var(--primary-color) !important;
+      font-weight: 500;
+    }
+    
+    /* Table Styling */
+    .table th {
+      border-top: none;
+      background-color: rgba(0, 59, 124, 0.05);
+      color: var(--primary-color);
+      font-weight: 600;
+      padding: 1rem;
+    }
+    
+    .table td {
+      padding: 1rem;
+      vertical-align: middle;
+    }
+    
+    .table-hover tbody tr:hover {
+      background-color: rgba(0, 59, 124, 0.03);
+    }
+    
+    /* Content Header */
+    .content-header {
+      padding: 15px 1rem 0;
+    }
+    
+    .content-header h1 {
+      font-weight: 600;
+      font-size: 1.8rem;
+      color: var(--primary-color);
+    }
+    
+    /* Small Box */
+    .small-box {
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-normal);
+    }
+    
+    .small-box:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .small-box .icon {
+      opacity: 0.7;
+    }
+    
+    .bg-info {
+      background: linear-gradient(135deg, #2196F3, #1976D2) !important;
+    }
+    
+    .bg-success {
+      background: linear-gradient(135deg, #4CAF50, #388E3C) !important;
+    }
+    
+    .bg-warning {
+      background: linear-gradient(135deg, #FF9800, #F57C00) !important;
+    }
+    
+    .bg-danger {
+      background: linear-gradient(135deg, #F44336, #D32F2F) !important;
+    }
+    
+    /* Info Box */
+    .info-box {
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-normal);
+    }
+    
+    .info-box:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .info-box-icon {
+      border-radius: var(--border-radius) 0 0 var(--border-radius);
+    }
+    
+    /* Form controls */
+    .form-control {
+      border-radius: 6px;
+      font-size: 0.95rem;
+      padding: 0.6rem 1rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s;
+      box-shadow: none;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 59, 124, 0.2);
+    }
+    
+    /* Custom checkboxes */
+    .custom-control-input:checked ~ .custom-control-label::before {
+      border-color: var(--primary-color);
+      background-color: var(--primary-color);
+    }
+    
+    /* Tooltips */
+    .tooltip-inner {
+      background-color: var(--primary-color);
+      border-radius: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .bs-tooltip-auto[x-placement^=top] .arrow::before,
+    .bs-tooltip-top .arrow::before {
+      border-top-color: var(--primary-color);
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb {
+      background-color: transparent;
+      padding: 0;
+    }
+    
+    .breadcrumb-item.active {
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+    
+    /* Page title */
+    .content-header .text-dark {
+      color: var(--primary-color) !important;
+      font-weight: 600;
+    }
+    
+    /* Custom animations */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Alert styling */
+    .alert {
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      border: none;
+    }
+    
+    .alert-success {
+      background-color: rgba(76, 175, 80, 0.2);
+      color: #2e7d32;
+    }
+    
+    .alert-danger {
+      background-color: rgba(244, 67, 54, 0.2);
+      color: #c62828;
+    }
+    
+    .alert-warning {
+      background-color: rgba(255, 152, 0, 0.2);
+      color: #ef6c00;
+    }
+    
+    .alert-info {
+      background-color: rgba(33, 150, 243, 0.2);
+      color: #0277bd;
+    }
+
+    /* Loading animations */
+    .loader {
+      border: 5px solid rgba(0, 59, 124, 0.1);
+      border-radius: 50%;
+      border-top: 5px solid var(--primary-color);
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .content-header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .btn {
+        padding: 0.4rem 1rem;
+      }
+      
+      .card-header {
+        padding: 0.75rem 1rem;
+      }
+      
+      .card-body {
+        padding: 1rem;
+      }
+      
+      .table th, .table td {
+        padding: 0.75rem;
+      }
+      
+      /* Improve sidebar toggle visibility on mobile */
+      .sidebar-toggle-btn {
+        display: block !important;
+        padding: 10px !important;
+        margin-left: 5px !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-radius: 5px !important;
+        font-size: 1.2rem !important;
+      }
+    }
+
+    /* SRMIST Specific Styling */
+    .srmist-header {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .srmist-accent-border {
+      border-bottom: 3px solid var(--secondary-color);
+    }
+    
+    /* Animation and Transition Classes */
+    .transition-normal {
+      transition: all 0.3s ease;
+    }
+    
+    .transition-normal:hover {
+      background-color: rgba(0, 59, 124, 0.1);
+      transform: translateX(5px);
+    }
+    
+    /* Animate.css classes */
+    .animate__animated {
+      animation-duration: 0.5s;
+    }
+    
+    .animate__fadeIn {
+      animation-name: fadeIn;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Toast notification customization */
+    .toast-top-right {
+      top: 12px;
+      right: 12px;
+    }
+    #toast-container > div {
+      opacity: 1;
+      border-radius: 4px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      padding: 15px 15px 15px 50px;
+    }
+    #toast-container > .toast-success {
+      background-color: var(--success-color);
+    }
+    #toast-container > .toast-error {
+      background-color: var(--danger-color);
+    }
+    #toast-container > .toast-info {
+      background-color: var(--info-color);
+    }
+    #toast-container > .toast-warning {
+      background-color: var(--warning-color);
+    }
+
+    /* Mobile fixes for sidebar toggle button */
+    .mobile-sidebar-toggle {
+      font-size: 1.5rem !important;
+      padding: 0.6rem !important;
+      margin: 0.25rem 0.5rem !important;
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      border-radius: 0.3rem !important;
+      display: block !important;
+    }
+    
+    @media (max-width: 767.98px) {
+      .mobile-sidebar-toggle {
+        display: block !important;
+      }
+    }
+  </style>
+
+  {% block custom_css %}
+  {% endblock custom_css %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-dark navbar-primary">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link mobile-sidebar-toggle" data-widget="pushmenu" href="#" role="button">
+          <i class="fas fa-bars"></i>
+        </a>
+      </li>
+    </ul>
+    
+    <!-- Middle navbar brand -->
+    <span class="navbar-brand mx-auto d-none d-md-block font-weight-bold">Admin Dashboard</span>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">15</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">15 Notifications</span>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> 4 new messages
+            <span class="float-right text-muted text-sm">3 mins</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> 8 staff requests
+            <span class="float-right text-muted text-sm">12 hours</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i> 3 new reports
+            <span class="float-right text-muted text-sm">2 days</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+        </div>
+      </li>
+      <!-- User Account Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-user-circle fa-lg"></i> <span class="font-weight-bold ml-1">{{ user.first_name }}</span> <i class="fas fa-caret-down"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right shadow-md rounded-lg animate__animated animate__fadeIn">
+          <a href="{% url 'admin_profile' %}" class="dropdown-item transition-normal">
+            <i class="fas fa-user-cog mr-2"></i> Profile
+          </a>
+          <a href="{% url 'admin_change_password' %}" class="dropdown-item transition-normal">
+            <i class="fas fa-key mr-2"></i> Change Password
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="{% url 'logout' %}" class="dropdown-item transition-normal">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  {% include 'hod_template/sidebar_template.html' with user=user id=id %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">{% block page_title %}{% endblock page_title %}</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item active">{% block breadcrumb %}{% endblock breadcrumb %}</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        {% block main_content %}{% endblock main_content %}
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% include 'hod_template/footer.html' %}
+
+</div>
+<!-- ./wrapper -->
+
+<!-- Session Timeout Modal -->
+<div class="modal fade" id="sessionTimeoutModal" data-backdrop="static" data-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content animate__animated animate__bounceIn">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-exclamation-triangle"></i> Session Timeout Warning
+        </h5>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+          <h4>Your session is about to expire</h4>
+        </div>
+        <p class="text-center">Your session will expire in <span id="sessionCountdown">30</span> seconds due to inactivity.</p>
+        <p class="text-center">Click "Stay Connected" to continue your session.</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-primary" id="stayConnected">
+          <i class="fas fa-sync"></i> Stay Connected
+        </button>
+        <a href="{% url 'logout' %}" class="btn btn-secondary">
+          <i class="fas fa-sign-out-alt"></i> Logout Now
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery -->
+<script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{% static "plugins/jquery-ui/jquery-ui.min.js" %}"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+<!-- ChartJS -->
+<script src="{% static "plugins/chart.js/Chart.min.js" %}"></script>
+<!-- Sparkline -->
+<script src="{% static "plugins/sparklines/sparkline.js" %}"></script>
+<!-- JQVMap -->
+<script src="{% static "plugins/jqvmap/jquery.vmap.min.js" %}"></script>
+<script src="{% static "plugins/jqvmap/maps/jquery.vmap.usa.js" %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static "plugins/jquery-knob/jquery.knob.min.js" %}"></script>
+<!-- daterangepicker -->
+<script src="{% static "plugins/moment/moment.min.js" %}"></script>
+<script src="{% static "plugins/daterangepicker/daterangepicker.js" %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static "plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js" %}"></script>
+<!-- Summernote -->
+<script src="{% static "plugins/summernote/summernote-bs4.min.js" %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static "plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js" %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static "dist/js/adminlte.js" %}"></script>
+
+<!-- Session Timeout JavaScript -->
+<script>
+  $(document).ready(function() {
+    // Get session timeout from Django context (in minutes)
+    var SESSION_TIMEOUT = "{{ SESSION_IDLE_TIMEOUT }}" * 60 * 1000; // Convert to milliseconds
+    var WARNING_TIME = 30000; // 30 seconds warning before timeout
+    var sessionTimer = null;
+    var countdownTimer = null;
+    var lastActivity = Date.now();
+
+    // Track user activity
+    function resetActivityTimer() {
+        lastActivity = Date.now();
+        if (sessionTimer) {
+            clearTimeout(sessionTimer);
+        }
+        if (countdownTimer) {
+            clearInterval(countdownTimer);
+        }
+        $('#sessionTimeoutModal').modal('hide');
+        startSessionTimer();
+    }
+
+    // Start session timeout timer
+    function startSessionTimer() {
+        sessionTimer = setTimeout(showTimeoutWarning, SESSION_TIMEOUT - WARNING_TIME);
+    }
+
+    // Show timeout warning modal with animation
+    function showTimeoutWarning() {
+        var countdown = 30;
+        $('#sessionCountdown').text(countdown);
+        
+        $('#sessionTimeoutModal').modal('show');
+        
+        countdownTimer = setInterval(function() {
+            countdown--;
+            $('#sessionCountdown').text(countdown);
+            
+            if (countdown <= 0) {
+                clearInterval(countdownTimer);
+                window.location.href = "{% url 'logout' %}";
+            }
+        }, 1000);
+    }
+
+    // Reset activity timer on user interaction
+    $(document).on('mousemove keypress click', function() {
+        resetActivityTimer();
+    });
+
+    // Stay connected button
+    $('#stayConnected').on('click', function() {
+        resetActivityTimer();
+    });
+
+    // Initialize the session timer when page loads
+    startSessionTimer();
+
+    // Add animation to page elements
+    $('.card').addClass('animate__animated animate__fadeIn');
+    $('.table').addClass('animate__animated animate__fadeIn');
+    $('.content-header').addClass('animate__animated animate__slideInDown');
+    
+    // Smooth hover effects for buttons and cards
+    $('.btn').hover(
+        function() { $(this).addClass('shadow-sm'); },
+        function() { $(this).removeClass('shadow-sm'); }
+    );
+    
+    // Toast notifications setup
+    $('.toast').toast({
+        delay: 3000
+    });
+    
+    // Tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Popovers
+    $('[data-toggle="popover"]').popover();
+    
+    // Enable dropdown functionality
+    $('.dropdown-toggle').dropdown();
+    
+    // Ensure notification dropdowns work correctly
+    $('.nav-item.dropdown').on('show.bs.dropdown', function() {
+      $(this).find('.dropdown-menu').first().stop(true, true).slideDown(200);
+    });
+    
+    $('.nav-item.dropdown').on('hide.bs.dropdown', function() {
+      $(this).find('.dropdown-menu').first().stop(true, true).slideUp(200);
+    });
+  });
+</script>
+
+<!-- Toastr JS for notifications -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // Configure toastr options
+    toastr.options = {
+      "closeButton": true,
+      "debug": false,
+      "newestOnTop": true,
+      "progressBar": true,
+      "positionClass": "toast-top-right",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    };
+    
+    // Process Django messages and show as toasts
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'success' %}
+          toastr.success("{{ message }}");
+        {% elif message.tags == 'error' %}
+          toastr.error("{{ message }}");
+        {% elif message.tags == 'info' %}
+          toastr.info("{{ message }}");
+        {% elif message.tags == 'warning' %}
+          toastr.warning("{{ message }}");
+        {% else %}
+          toastr.info("{{ message }}");
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  });
+</script>
+
+{% block custom_js %}
+<script>
+  // Ensure sidebar toggle works properly on mobile
+  $(document).ready(function() {
+    $('.sidebar-toggle-btn').on('click', function(e) {
+      e.preventDefault();
+      $('body').toggleClass('sidebar-open');
+      $('body').toggleClass('sidebar-collapse');
+      $('.sidebar-toggle-btn').toggleClass('active');
+    });
+  });
+</script>
+{% endblock custom_js %}
+
+<!-- Sidebar Stability Script -->
+<script>
+  $(document).ready(function() {
+    // Fix sidebar layout issues
+    function fixSidebar() {
+      // Ensure sidebar height is correct
+      var windowHeight = $(window).height();
+      var navbarHeight = $('.main-header').outerHeight();
+      $('.sidebar').css('height', (windowHeight - navbarHeight) + 'px');
+      
+      // Fix treeview animation issues
+      $('.nav-treeview').each(function() {
+        if ($(this).parent().hasClass('menu-open')) {
+          $(this).css('display', 'block');
+        } else {
+          $(this).css('display', 'none');
+        }
+      });
+    }
+    
+    // Run the fix on page load
+    fixSidebar();
+    
+    // And when the window is resized
+    $(window).resize(function() {
+      fixSidebar();
+    });
+    
+    // Prevent multiple click events on sidebar items
+    $('.nav-sidebar .has-treeview > a').off('click.treeview');
+    $('.nav-sidebar .has-treeview > a').on('click.treeview', function(e) {
+      e.preventDefault();
+      
+      var $parent = $(this).parent();
+      var $treeview = $parent.find('> .nav-treeview');
+      
+      // Close all other open menus first
+      if (!$parent.hasClass('menu-open')) {
+        // Find all other open menus
+        $('.nav-sidebar .has-treeview.menu-open').not($parent).each(function() {
+          $(this).removeClass('menu-open');
+          $(this).find('> .nav-treeview').hide();
+          // Remove active class from the menu header
+          $(this).find('> a.active').removeClass('active');
+        });
+      }
+      
+      // Toggle the treeview with clean display rather than slideUp/Down
+      if ($parent.hasClass('menu-open')) {
+        $parent.removeClass('menu-open');
+        $treeview.hide();
+      } else {
+        $parent.addClass('menu-open');
+        $treeview.show();
+      }
+      
+      // Update parent's active status
+      if (!$(this).hasClass('active')) {
+        // Remove active class from all siblings
+        $(this).closest('.nav-sidebar').find('.has-treeview > a.active').removeClass('active');
+        // Add active class to this item
+        $(this).addClass('active');
+      }
+      
+      return false;
+    });
+    
+    // Set correct active state on page load
+    setTimeout(function() {
+      // Find all active menu items
+      $('.nav-sidebar .nav-item .active').each(function() {
+        // Set parent treeview to open
+        $(this).parents('.has-treeview').addClass('menu-open');
+        $(this).parents('.nav-treeview').show();
+      });
+    }, 100);
+  });
+</script>
+
+<!-- Mobile sidebar handling script -->
+<script>
+  $(document).ready(function() {
+    // Fix sidebar toggle on mobile
+    $('#sidebarToggleButton').on('click', function() {
+      $('body').toggleClass('sidebar-open');
+      $('body').toggleClass('sidebar-closed sidebar-collapse');
+    });
+  });
+</script>
+
+<!-- Mobile Responsive Script -->
+<script src="{% static "js/mobile-responsive.js" %}"></script>
+</body>
+</html>

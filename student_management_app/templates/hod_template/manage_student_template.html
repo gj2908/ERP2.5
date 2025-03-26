@@ -1,0 +1,195 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Manage Students
+{% endblock page_title %}
+
+{% block custom_css %}
+<style>
+.sort-icon {
+    cursor: pointer;
+    margin-left: 5px;
+}
+.sort-icon.active {
+    color: #007bff;
+}
+.search-box {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+.search-box input {
+    width: 300px;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+.search-box button {
+    padding: 0.5rem 1rem;
+}
+.status-active {
+    color: #28a745;
+    font-weight: bold;
+}
+.status-inactive {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
+{% endblock custom_css %}
+
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row mb-4">
+              <div class="col-12">
+                  <a href="{% url 'add_student' %}" class="btn btn-primary btn-lg float-right">+ Add Student</a>
+              </div>
+          </div>
+           <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Student List</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="search-box">
+                    <form method="get" action="{% url 'manage_student' %}" class="d-flex align-items-center">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Search by name, registration number..." 
+                               value="{{ search_query }}">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                        {% if search_query %}
+                            <a href="{% url 'manage_student' %}" class="btn btn-secondary ml-2">Clear</a>
+                        {% endif %}
+                    </form>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover text-nowrap">
+                      <thead>
+                        <tr>
+                          <th>
+                            Registration No.
+                            <i class="fas fa-sort sort-icon" data-sort="registration"></i>
+                          </th>
+                          <th>First Name</th>
+                          <th>Last Name</th>
+                          <th>Email</th>
+                          <th>Parent's Email</th>
+                          <th>Gender</th>
+                          <th>Profile Pic</th>
+                          <th>
+                            Session Year
+                            <i class="fas fa-sort sort-icon" data-sort="session"></i>
+                          </th>
+                          <th>
+                            Course
+                            <i class="fas fa-sort sort-icon" data-sort="course"></i>
+                          </th>
+                          <th>Account Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="studentTableBody">
+                      {% for student in students %}
+                        <tr>
+                          <td>{{ student.registration_number }}</td>
+                          <td>{{ student.admin.first_name }}</td>
+                          <td>{{ student.admin.last_name }}</td>
+                          <td>{{ student.admin.email }}</td>
+                          <td>{{ student.parents_email }}</td>
+                          <td>{{ student.gender }}</td>
+                          <td><img src="{{ student.profile_pic }}" style="width:100px" alt="Student Profile Picture"/></td>
+                          <td data-session-start="{{ student.session_year_id.start_year }}">
+                            {{ student.session_year_id.start_year }} TO {{ student.session_year_id.end_year }}
+                          </td>
+                          <td>{{ student.course_id.course_name }}</td>
+                          <td>
+                            {% if student.admin.is_active %}
+                                <span class="status-active">Active</span>
+                            {% else %}
+                                <span class="status-inactive">Inactive</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            <a href="{% url 'edit_student' student_id=student.admin.id %}" class="btn btn-warning">Edit</a>
+                            <a href="{% url 'delete_student' student.admin.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+$(document).ready(function() {
+    let sortOrders = {
+        'registration': 'asc',
+        'session': 'asc',
+        'course': 'asc'
+    };
+
+    $('.sort-icon').click(function() {
+        const sortType = $(this).data('sort');
+        const tbody = $('#studentTableBody');
+        const rows = tbody.find('tr').toArray();
+        
+        // Remove active class from all icons
+        $('.sort-icon').removeClass('active');
+        // Add active class to clicked icon
+        $(this).addClass('active');
+
+        rows.sort(function(a, b) {
+            let aValue, bValue;
+            
+            if (sortType === 'registration') {
+                aValue = $(a).find('td:first').text();
+                bValue = $(b).find('td:first').text();
+            } else if (sortType === 'session') {
+                aValue = $(a).find('td[data-session-start]').data('session-start');
+                bValue = $(b).find('td[data-session-start]').data('session-start');
+            } else if (sortType === 'course') {
+                aValue = $(a).find('td:eq(8)').text();
+                bValue = $(b).find('td:eq(8)').text();
+            }
+
+            if (sortOrders[sortType] === 'asc') {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        // Toggle sort order
+        sortOrders[sortType] = sortOrders[sortType] === 'asc' ? 'desc' : 'asc';
+        
+        // Update icon
+        if (sortOrders[sortType] === 'asc') {
+            $(this).removeClass('fa-sort-down').addClass('fa-sort-up');
+        } else {
+            $(this).removeClass('fa-sort-up').addClass('fa-sort-down');
+        }
+
+        tbody.empty();
+        rows.forEach(function(row) {
+            tbody.append(row);
+        });
+    });
+});
+</script>
+{% endblock custom_js %}
+

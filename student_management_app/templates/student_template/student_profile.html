@@ -1,0 +1,135 @@
+{% extends 'student_template/base_template.html' %}
+{% block page_title %}
+View Profile
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">View Profile</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <div class="card-body">
+                  <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" value="{{ user.username }}" title="Username" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" class="form-control" value="{{ user.email }}" title="Email" disabled>
+                  </div>
+                   <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" id="first_name" class="form-control" value="{{ user.first_name }}" title="First Name" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" id="last_name" class="form-control" value="{{ user.last_name }}" title="Last Name" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label for="registration_number">Registration Number</label>
+                    <input type="text" id="registration_number" class="form-control" value="{{ student.registration_number }}" title="Registration Number" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label for="parents_email">Parent's Email</label>
+                    <input type="text" id="parents_email" class="form-control" value="{{ student.parents_email }}" title="Parent's Email" disabled>
+                  </div>
+                   <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" class="form-control" value="{{ student.address }}" title="Address" disabled>
+                  </div>
+                   <div class="form-group">
+                      {% if messages %}
+                        {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                        <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                        <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-info">
+              <div class="card-header">
+                <h3 class="card-title">Academic Information</h3>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped">
+                    <tr>
+                      <th style="width: 30%">Course</th>
+                      <td>{{ student.course_id.course_name }}</td>
+                    </tr>
+                    <tr>
+                      <th style="width: 30%">Session Year</th>
+                      <td>
+                        {% if session %}
+                          {{ session.start_year }} - {{ session.end_year }}
+                        {% else %}
+                          Not assigned
+                        {% endif %}
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if class_assignments %}
+        <div class="row mt-4">
+          <div class="col-md-12">
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">Enrolled Sections</h3>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>Course</th>
+                        <th>Section</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for assignment in class_assignments %}
+                      <tr>
+                        <td>{% if assignment.class_id.course_session %}{{ assignment.class_id.course_session.course.course_name }}{% else %}{{ student.course_id.course_name }}{% endif %}</td>
+                        <td>{{ assignment.class_id.section }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+{% endblock main_content %}
+

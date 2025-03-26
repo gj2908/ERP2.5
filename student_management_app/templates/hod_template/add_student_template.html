@@ -1,0 +1,166 @@
+{% extends 'hod_template/base_template.html' %}
+{% load static %}
+{% block page_title %}
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Add Student</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form role="form" action="{% url 'add_student_save' %}" method="post" enctype="multipart/form-data" id="addStudentForm">
+                  {% csrf_token %}
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>{{ form.email.label }}</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.address.label }}</label>
+                        {{ form.address }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.course.label }}</label>
+                        {{ form.course }}
+                        <div class="invalid-feedback">Please select a course</div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.gender.label }}</label>
+                        {{ form.gender }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.session_year_id.label }}</label>
+                        {{ form.session_year_id }}
+                        <div class="invalid-feedback">Please select a session year</div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.profile_pic.label }}</label>
+                        {{ form.profile_pic }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.registration_number.label }}</label>
+                        {{ form.registration_number }}
+                    </div>
+                    <div class="form-group">
+                        <label>{{ form.parents_email.label }}</label>
+                        {{ form.parents_email }}
+                    </div>
+                    <div class="form-group">
+                        {% if messages %}
+                        {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                        <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% if message.tags == 'success' %}
+                        <div class="alert alert-success" style="margin-top:10px">{{ message }}</div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                  <div class="alert alert-info mb-3">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Note:</strong> A secure password will be automatically generated and sent to the student's email address. 
+                    The student will be instructed to change their password after first login.
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block">Add Student</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+{% block custom_js %}
+<script>
+    $(document).ready(function(){
+        // Email validation
+        $("#id_email").keyup(function(){
+            var email=$(this).val();
+
+            if(email!=""){
+                $.ajax({
+                    url:"{% url 'check_email_exist' %}",
+                    type:"POST",
+                    data:{email:email}
+                })
+                .done(function(response){
+                    console.log(response);
+                    if(response=="True"){
+                        $(".email_error").remove();
+                        $("<span class='email_error' style='padding: 5px;color: red;font-weight: bold;'>Email Not Available</span>").insertAfter("#id_email");
+                    }
+                    else{
+                        $(".email_error").remove();
+                        $("<span class='email_error' style='padding: 5px;color: green;font-weight: bold;'>Email Available</span>").insertAfter("#id_email");
+                    }
+                })
+                .fail(function(){
+                    console.log("failed");
+                });
+            }
+            else{
+                $(".email_error").remove();
+            }
+        });
+
+        // Initialize Select2 for course and session year dropdowns
+        $('#id_course, #id_session_year_id').select2({
+            theme: 'bootstrap4',
+            width: '100%'
+        });
+
+        // Form validation
+        $("#addStudentForm").submit(function(e) {
+            var course = $("#id_course").val();
+            var sessionYear = $("#id_session_year_id").val();
+            var isValid = true;
+
+            if (!course || course === "") {
+                $("#id_course").addClass("is-invalid");
+                isValid = false;
+            } else {
+                $("#id_course").removeClass("is-invalid");
+            }
+
+            if (!sessionYear || sessionYear === "") {
+                $("#id_session_year_id").addClass("is-invalid");
+                isValid = false;
+            } else {
+                $("#id_session_year_id").removeClass("is-invalid");
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Add change event handlers for course and session year
+        $("#id_course, #id_session_year_id").change(function() {
+            $(this).removeClass("is-invalid");
+        });
+    });
+</script>
+{% endblock custom_js %}

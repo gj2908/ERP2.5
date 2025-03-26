@@ -1,0 +1,175 @@
+{% extends 'staff_template/base_template.html' %}
+{% load arithmetic_filters %}
+{% block page_title %}
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+                    <div class="row">
+              <div class="col-md-12">
+            <!-- general form elements -->
+            <div class="card card-primary">
+              <div class="card-header">
+                    <h3 class="card-title">View Attendance</h3>
+              </div>
+              <!-- /.card-header -->
+                <div class="card-body">
+                   <div class="form-group">
+                      <label>Class Subject</label>
+                      <select class="form-control" name="class_subject" id="class_subject" title="Select Class Subject">
+                        <option value="">Select Class Subject</option>
+                        {% for class_subject in class_subjects %}
+                          <option value="{{ class_subject.id }}" {% if selected_subject == class_subject.id|stringformat:"s" %}selected{% endif %}>
+                            {{ class_subject.subject.subject_name }} 
+                            ({{ class_subject.class_id.course_session.course.course_name }} - 
+                            {{ class_subject.class_id.section }} - 
+                            {{ class_subject.class_id.course_session.session_year.start_year }} - {{ class_subject.class_id.course_session.session_year.end_year }})
+                          </option>
+                        {% endfor %}
+                    </select>
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer">
+                    <button type="button" class="btn btn-primary" id="fetch_attendance">View Attendance</button>
+                  </div>
+                   </div>
+                <!-- /.card -->
+
+                {% if attendance_data %}
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Attendance Statistics</h3>
+                        <div class="card-tools">
+                            <form method="post" action="{% url 'export_staff_attendance_pdf' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="class_subject_id" value="{{ selected_subject }}">
+                                <button type="submit" class="btn btn-light btn-sm ml-2">
+                                    <i class="fas fa-file-pdf"></i> Print Report
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                  <tr>
+                                    <th>Registration No.</th>
+                                    <th>Student Name</th>
+                                    <th>Total Classes</th>
+                                    <th>Classes Attended</th>
+                                    <th>Classes Absent</th>
+                                    <th>Attendance % <i class="fas fa-sort-up sort-icons" id="sort-asc"></i><i class="fas fa-sort-down sort-icons" id="sort-desc"></i></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for student in attendance_data %}
+                                  <tr>
+                                    <td>{{ student.registration_number }}</td>
+                                    <td>{{ student.student_name }}</td>
+                                    <td>{{ student.total_classes }}</td>
+                                    <td>{{ student.classes_attended }}</td>
+                                    <td>{{ student.total_classes|subtract:student.classes_attended }}</td>
+                                    <td>
+                                      <div class="progress">
+                                        <div class="progress-bar {% if student.attendance_percentage >= 75 %}bg-success{% elif student.attendance_percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                             role="progressbar" 
+                                             style="width: {{ student.attendance_percentage }}%"
+                                             aria-valuenow="{{ student.attendance_percentage|stringformat:'.0f' }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                          {{ student.attendance_percentage|floatformat:1 }}%
+                                        </div>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                         </div>
+                    </div>
+                </div>
+                {% endif %}
+          </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+    $(document).ready(function(){
+        $("#fetch_attendance").click(function(){
+        var class_subject = $("#class_subject").val();
+        if(class_subject == ""){
+            alert("Please select a class subject");
+            return;
+        }
+        window.location.href = "?class_subject=" + class_subject;
+    });
+
+    $("#export_pdf").click(function(){
+        window.print();
+    });
+
+    function sortTable(n, order) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.querySelector(".table");
+        switching = true;
+        dir = order; // Set the sorting direction to ascending or descending
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                if (dir == "asc") {
+                    if (parseFloat(x.innerText) > parseFloat(y.innerText)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (parseFloat(x.innerText) < parseFloat(y.innerText)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++; 
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+
+    $("#sort-asc").click(function() {
+        sortTable(5, "asc");
+    });
+
+    $("#sort-desc").click(function() {
+        sortTable(5, "desc");
+    });
+});
+</script>
+{% endblock custom_js %}
+
+<style>
+    th, td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .sort-icons {
+        cursor: pointer;
+        margin-left: 5px;
+    }
+</style>

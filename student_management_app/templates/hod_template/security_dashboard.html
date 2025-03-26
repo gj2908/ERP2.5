@@ -1,0 +1,227 @@
+{% extends 'hod_template/base_template.html' %}
+{% load static %}
+{% block page_title %}
+Security Dashboard
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Security Stats -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>{{ total_users }}</h3>
+                <p>Total Users</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-users"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>{{ active_users }}</h3>
+                <p>Active Users</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-user-check"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box {% if failed_attempts > 10 %}bg-danger{% else %}bg-warning{% endif %}">
+              <div class="inner">
+                <h3>{{ failed_attempts }}</h3>
+                <p>Failed Login Attempts (24h)</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-user-lock"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-primary">
+              <div class="inner">
+                <h3>{{ suspicious_ips|length }}</h3>
+                <p>Suspicious IPs (24h)</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Recent Activity -->
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Recent Login Activity</h3>
+              </div>
+              <div class="card-body p-0">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Time</th>
+                      <th>IP Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for login in recent_logins %}
+                    <tr>
+                      <td>{{ login.user.username }}</td>
+                      <td>{{ login.timestamp }}</td>
+                      <td>{{ login.ip_address }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="3" class="text-center">No recent logins</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {% if suspicious_ips %}
+            <div class="card">
+              <div class="card-header bg-warning">
+                <h3 class="card-title">Suspicious IP Addresses</h3>
+              </div>
+              <div class="card-body p-0">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>IP Address</th>
+                      <th>Activity Count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ip in suspicious_ips %}
+                    <tr>
+                      <td>{{ ip.ip_address }}</td>
+                      <td>{{ ip.count }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Security Recommendations -->
+          <div class="col-md-6">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Security Recommendations</h3>
+              </div>
+              <div class="card-body">
+                <div class="alert alert-info">
+                  <h5><i class="icon fas fa-info"></i> Security Tips</h5>
+                  <p>Here are some recommendations to enhance your portal's security:</p>
+                </div>
+                
+                <div class="callout callout-success">
+                  <h5><i class="fas fa-check"></i> Already Implemented</h5>
+                  <ul>
+                    <li>User activity logging</li>
+                    <li>Password reset timeout: {{ security_settings.password_reset_timeout|default:"Not set" }}</li>
+                    <li>Session timeout: {{ security_settings.session_idle_timeout|default:"Not set" }} minutes</li>
+                  </ul>
+                </div>
+                
+                <div class="callout callout-warning">
+                  <h5><i class="fas fa-exclamation-triangle"></i> Recommended Actions</h5>
+                  <ul>
+                    <li>Enable HTTPS with valid SSL certificate</li>
+                    <li>Implement rate limiting for login attempts</li>
+                    <li>Set up automated security audits</li>
+                    <li>Configure email alerts for suspicious activities</li>
+                    <li>Regularly backup the database</li>
+                  </ul>
+                </div>
+                
+                <a href="{% url 'security_settings' %}" class="btn btn-primary btn-block">
+                  <i class="fas fa-cog"></i> Configure Security Settings
+                </a>
+                <a href="{% url 'user_activity_logs' %}" class="btn btn-secondary btn-block">
+                  <i class="fas fa-list"></i> View Activity Logs
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Security Best Practices -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-outline card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Security Best Practices</h3>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="card">
+                      <div class="card-header bg-primary">
+                        <h5 class="mb-0">Access Control</h5>
+                      </div>
+                      <div class="card-body">
+                        <ul>
+                          <li>Implement role-based access control (RBAC)</li>
+                          <li>Use the principle of least privilege</li>
+                          <li>Regularly audit user permissions</li>
+                          <li>Remove access for inactive users</li>
+                          <li>Consider implementing 2FA for admin accounts</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="card">
+                      <div class="card-header bg-success">
+                        <h5 class="mb-0">Data Protection</h5>
+                      </div>
+                      <div class="card-body">
+                        <ul>
+                          <li>Encrypt sensitive data at rest</li>
+                          <li>Use HTTPS for all communications</li>
+                          <li>Implement proper input validation</li>
+                          <li>Set up regular database backups</li>
+                          <li>Have a data breach response plan</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="card">
+                      <div class="card-header bg-warning">
+                        <h5 class="mb-0">System Security</h5>
+                      </div>
+                      <div class="card-body">
+                        <ul>
+                          <li>Keep all software dependencies updated</li>
+                          <li>Regularly apply security patches</li>
+                          <li>Conduct security audits periodically</li>
+                          <li>Set up monitoring and alerting</li>
+                          <li>Use a web application firewall (WAF)</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+{% endblock main_content %} 

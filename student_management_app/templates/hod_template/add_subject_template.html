@@ -1,0 +1,250 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Add New Subject</h3>
+                    <div class="card-tools">
+                      <a href="{% url 'manage_subject' %}" class="btn btn-light">
+                        <i class="fas fa-list"></i> View All Subjects
+                      </a>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  
+                  <!-- form start -->
+                  <form role="form" method="POST" action="{% url 'add_subject_save' %}" id="addSubjectForm">
+                    {% csrf_token %}
+                    <div class="card-body">
+                      <!-- Alert for information -->
+                      <div class="alert alert-info">
+                        <h5><i class="icon fas fa-info"></i> Multiple Course-Session Support</h5>
+                        <p>You can add the same subject to multiple course and session combinations. Use the "Add Another Course-Session" button to add more combinations.</p>
+                      </div>
+                      
+                      <!-- Subject Name Field -->
+                      <div class="form-group">
+                        <label for="subject_name">
+                          <i class="fas fa-book"></i> Subject Name
+                        </label>
+                        <input type="text" class="form-control" id="subject_name" name="subject_name" 
+                               placeholder="Enter Subject Name (e.g. Mathematics, Physics)" required>
+                        <small class="form-text text-muted">Enter a descriptive name for the subject</small>
+                      </div>
+                      
+                      <!-- Course-Session Container -->
+                      <div class="course-session-container">
+                        <label><i class="fas fa-layer-group"></i> Course-Session Combinations</label>
+                        
+                        <!-- First Combination Card -->
+                        <div class="card mb-3 course-session-card">
+                          <div class="card-body bg-light">
+                            <h5 class="card-title text-primary">
+                              <i class="fas fa-link"></i> Course-Session Combination 1
+                            </h5>
+                            <div class="row">
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label><i class="fas fa-calendar"></i> Session Year</label>
+                                  <select class="form-control session-select" name="session[]" required>
+                                    <option value="">Select Session Year</option>
+                                    {% for session in sessions %}
+                                      <option value="{{ session.id }}">{{ session.start_year }} - {{ session.end_year }}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                  <label><i class="fas fa-graduation-cap"></i> Course</label>
+                                  <select class="form-control course-select" name="course[]" required>
+                                    <option value="">Select Course</option>
+                                    {% for course in courses %}
+                                      <option value="{{ course.id }}">{{ course.course_name }}</option>
+                                    {% endfor %}
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="course-session-status" style="display: none;">
+                              <!-- Course session status will be displayed here -->
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Add More Button -->
+                      <button type="button" class="btn btn-info" id="addMoreBtn">
+                        <i class="fas fa-plus"></i> Add Another Course-Session
+                      </button>
+                    </div>
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                      <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                        <i class="fas fa-save"></i> Add Subject
+                      </button>
+                    </div>
+                  </form>
+                </div>
+                <!-- /.card -->
+              </div>
+          </div>
+      </div>
+    </section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+    $(document).ready(function() {
+        let courseSessionCount = 1;
+        
+        // Function to check course session status
+        function checkCourseSessionStatus(container) {
+            var courseId = container.find(".course-select").val();
+            var sessionId = container.find(".session-select").val();
+            var statusDiv = container.find(".course-session-status");
+            
+            if(courseId && sessionId) {
+                $.ajax({
+                    url: "{% url 'get_course_sessions' %}",
+                    type: 'POST',
+                    data: {
+                        course_id: courseId,
+                        session_id: sessionId,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        // Parse response if it's a string
+                        var data = typeof response === 'string' ? JSON.parse(response) : response;
+                        
+                        if(data.exists) {
+                            // Course session exists
+                            statusDiv.html('<div class="alert alert-success">' +
+                                '<i class="fas fa-check-circle"></i> ' +
+                                'This course is available for the selected session. ' +
+                                'Your subject will be linked to this course-session combination.' +
+                                '</div>');
+                        } else {
+                            // Course session doesn't exist but will be created
+                            statusDiv.html('<div class="alert alert-info">' +
+                                '<i class="fas fa-info-circle"></i> ' +
+                                'This course is not yet available for the selected session. ' +
+                                'A new course-session link will be automatically created when you add the subject.' +
+                                '</div>');
+                        }
+                        statusDiv.show();
+                    },
+                    error: function() {
+                        statusDiv.html('<div class="alert alert-danger">' +
+                            '<i class="fas fa-exclamation-circle"></i> ' +
+                            'Error checking course-session status.' +
+                            '</div>');
+                        statusDiv.show();
+                    }
+                });
+            } else {
+                statusDiv.hide();
+            }
+        }
+        
+        // Function to add a new course-session combination
+        $("#addMoreBtn").click(function() {
+            courseSessionCount++;
+            
+            const newCard = `
+                <div class="card mb-3 course-session-card">
+                  <div class="card-body bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h5 class="card-title text-primary m-0">
+                        <i class="fas fa-link"></i> Course-Session Combination ${courseSessionCount}
+                      </h5>
+                      <button type="button" class="btn btn-danger btn-sm remove-course-session">
+                        <i class="fas fa-times"></i> Remove
+                      </button>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label><i class="fas fa-calendar"></i> Session Year</label>
+                          <select class="form-control session-select" name="session[]" required>
+                            <option value="">Select Session Year</option>
+                            {% for session in sessions %}
+                              <option value="{{ session.id }}">{{ session.start_year }} - {{ session.end_year }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label><i class="fas fa-graduation-cap"></i> Course</label>
+                          <select class="form-control course-select" name="course[]" required>
+                            <option value="">Select Course</option>
+                            {% for course in courses %}
+                              <option value="{{ course.id }}">{{ course.course_name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="course-session-status" style="display: none;">
+                      <!-- Course session status will be displayed here -->
+                    </div>
+                  </div>
+                </div>
+            `;
+            
+            $(".course-session-container").append(newCard);
+        });
+        
+        // Check status when either course or session changes
+        $(document).on("change", ".course-select, .session-select", function() {
+            const container = $(this).closest(".course-session-card");
+            checkCourseSessionStatus(container);
+        });
+        
+        // Remove a course-session combination
+        $(document).on("click", ".remove-course-session", function() {
+            $(this).closest(".course-session-card").remove();
+        });
+        
+        // Form validation before submit
+        $("#addSubjectForm").submit(function(e) {
+            const subjectName = $("#subject_name").val().trim();
+            
+            if (!subjectName) {
+                e.preventDefault();
+                alert("Please enter a subject name");
+                return false;
+            }
+            
+            // Check that at least one valid course-session combination is selected
+            let validCombinations = 0;
+            $(".course-session-card").each(function() {
+                const courseId = $(this).find(".course-select").val();
+                const sessionId = $(this).find(".session-select").val();
+                
+                if (courseId && sessionId) {
+                    validCombinations++;
+                }
+            });
+            
+            if (validCombinations === 0) {
+                e.preventDefault();
+                alert("Please select at least one valid course-session combination");
+                return false;
+            }
+            
+            return true;
+        });
+    });
+</script>
+{% endblock custom_js %}
+

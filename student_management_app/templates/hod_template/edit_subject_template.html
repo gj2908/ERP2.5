@@ -1,0 +1,125 @@
+{% extends 'hod_template/base_template.html' %}
+{% block page_title %}
+Edit Subject
+{% endblock page_title %}
+{% block main_content %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Edit Subject</h3>
+                    <div class="card-tools">
+                      <a href="{% url 'manage_subject' %}" class="btn btn-light">
+                        <i class="fas fa-list"></i> Back to Subjects
+                      </a>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  
+                  <!-- form start -->
+                  <div class="card-body">
+                    <form role="form" method="POST" action="{% url 'edit_subject_save' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                        
+                        <div class="form-group">
+                            <label for="subject_name">
+                                <i class="fas fa-book"></i> Subject Name
+                            </label>
+                            <input type="text" class="form-control" id="subject_name" name="subject_name" value="{{ subject.subject_name }}" placeholder="Enter Subject Name" required>
+                            <small class="form-text text-muted">Update the name of the subject</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="course"><i class="fas fa-graduation-cap"></i> Course</label>
+                            <select class="form-control" name="course" id="course">
+                                {% for course in courses %}
+                                    <option value="{{ course.id }}" {% if course.id == subject.course_session.course.id %} selected {% endif %}>{{ course.course_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="session_year"><i class="fas fa-calendar-alt"></i> Session Year</label>
+                            <select class="form-control" name="session" id="session_year">
+                                {% for session_year in sessions %}
+                                    <option value="{{ session_year.id }}" {% if session_year.id == subject.course_session.session_year.id %} selected {% endif %}>{{ session_year.start_year }} to {{ session_year.end_year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="course-session-status">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Note: Changing the course or session might affect students already enrolled in this subject.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Update Subject
+                        </button>
+                    </form>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+          </div>
+      </div>
+    </section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+$(document).ready(function(){
+    $('#course, #session_year').change(function(){
+        var courseId = $('#course').val();
+        var sessionId = $('#session_year').val();
+        var statusDiv = $(".course-session-status");
+        
+        if(courseId && sessionId) {
+            $.ajax({
+                url: "{% url 'get_course_sessions' %}",
+                type: 'POST',
+                data: {
+                    course_id: courseId,
+                    session_id: sessionId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Parse response if it's a string
+                    var data = typeof response === 'string' ? JSON.parse(response) : response;
+                    
+                    if(data.exists) {
+                        // Course session exists
+                        statusDiv.html('<div class="alert alert-success">' +
+                            '<i class="fas fa-check-circle"></i> ' +
+                            'This course is available for the selected session.' +
+                            '</div>');
+                    } else {
+                        // Course session doesn't exist - warn user
+                        statusDiv.html('<div class="alert alert-warning">' +
+                            '<i class="fas fa-exclamation-triangle"></i> ' +
+                            'This course is not yet available for the selected session. ' +
+                            'A new course-session link will be created when you update the subject.' +
+                            '</div>');
+                    }
+                },
+                error: function() {
+                    statusDiv.html('<div class="alert alert-danger">' +
+                        '<i class="fas fa-exclamation-circle"></i> ' +
+                        'Error checking course-session status.' +
+                        '</div>');
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock custom_js %}
+

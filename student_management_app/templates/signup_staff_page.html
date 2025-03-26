@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Student Management System | Staff Signup</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static "plugins/fontawesome-free/css/all.min.css" %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static "plugins/icheck-bootstrap/icheck-bootstrap.min.css" %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static "dist/css/adminlte.min.css" %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a href="../../index2.html"><b>Student</b> Management System</a>
+  </div>
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Sign Up Staff to Student Management System</p>
+
+      <form action="/do_staff_signup" method="post" id="demo-form">
+      {% csrf_token %}
+        <div class="input-group mb-3">
+          <input type="email" class="form-control" placeholder="Email" name="email">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+              <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Username" name="username">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" placeholder="Password" name="password" id="password">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+          <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Address" name="address">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+
+        <div id="password_requirements" class="mb-3">
+          <p class="text-muted mb-1"><small>Password requirements:</small></p>
+          <ul class="list-unstyled" style="font-size: 0.8rem;">
+            <li id="length_check"><i class="fas fa-times text-danger"></i> At least 8 characters</li>
+            <li id="uppercase_check"><i class="fas fa-times text-danger"></i> At least 1 uppercase letter</li>
+            <li id="special_check"><i class="fas fa-times text-danger"></i> At least 1 special character</li>
+          </ul>
+        </div>
+
+        <div class="row">
+          <!-- /.col -->
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-block" >Signup Staff</button>
+          </div><!-- /.col -->
+
+        </div>
+        <div class="row">
+          {% if messages %}
+         <div class="col-12">
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="alert alert-danger" style="margin-top:10px">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </form>
+
+      <!-- /.social-auth-links -->
+
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static "dist/js/adminlte.min.js" %}"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<script>
+  $(document).ready(function() {
+    function validatePassword() {
+      const password = $('#password').val();
+      
+      // Check length
+      const lengthCheck = password.length >= 8;
+      $('#length_check i').attr('class', lengthCheck ? 'fas fa-check text-success' : 'fas fa-times text-danger');
+      
+      // Check uppercase
+      const uppercaseCheck = /[A-Z]/.test(password);
+      $('#uppercase_check i').attr('class', uppercaseCheck ? 'fas fa-check text-success' : 'fas fa-times text-danger');
+      
+      // Check special character
+      const specialCheck = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+      $('#special_check i').attr('class', specialCheck ? 'fas fa-check text-success' : 'fas fa-times text-danger');
+      
+      // Enable/disable submit button based on all checks
+      const allChecks = lengthCheck && uppercaseCheck && specialCheck;
+      $('button[type="submit"]').prop('disabled', !allChecks);
+      
+      return allChecks;
+    }
+    
+    // Validate on input
+    $('#password').on('keyup', validatePassword);
+    
+    // Validate on form submission
+    $('#demo-form').on('submit', function(e) {
+      if (!validatePassword()) {
+        e.preventDefault();
+        alert('Please ensure your password meets all requirements.');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

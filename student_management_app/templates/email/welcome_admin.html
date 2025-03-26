@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to SRM Student Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        .header {
+            background-color: #1a3353;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo {
+            height: 80px;
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        .content {
+            padding: 30px;
+            background: #f9f9f9;
+        }
+        .button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white !important;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .details {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #0066cc;
+        }
+        .activation-note {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- SRM Logo -->
+        <img src="https://upload.wikimedia.org/wikipedia/en/f/fe/Srmseal.png" alt="SRM Logo" class="logo">
+        <h1>SRM Student Portal</h1>
+    </div>
+    
+    <div class="content">
+        <p>Hello {{ user.first_name|default:user.username }},</p>
+        
+        <p>You have been successfully added as an <strong>Administrator</strong> on the SRM Student Portal.</p>
+        
+        <div class="details">
+            <p><strong>Your Account Details:</strong></p>
+            <p>Username: {{ user.username }}</p>
+            <p>Email: {{ user.email }}</p>
+        </div>
+        
+            <a href="{{ activation_url }}" class="button">Activate Now</a>
+        </p>
+        
+        <p>If the button doesn't work, you can copy and paste the following link into your browser:</p>
+        <p>{{ activation_url }}</p>
+        
+        <p>This activation link will expire in 24 hours.</p>
+        
+        <p>As an administrator, you will have full access to manage courses, staff, students, and other administrative functions once your account is activated.</p>
+        
+        <p>If you have any questions or need assistance, please contact the IT support team.</p>
+        
+        <p>Thank you,<br>
+        SRM Student Portal Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; {{ current_year }} SRM Institute of Science and Technology. All rights reserved.</p>
+        <p>This is an automated message, please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,223 @@
+{% extends 'student_template/base_template.html' %}
+{% block page_title %}
+View Attendance
+{% endblock page_title %}
+
+{% block custom_css %}
+<style>
+  /* Responsive table styles */
+  @media screen and (max-width: 768px) {
+    .table-responsive-card thead {
+      display: none;
+    }
+    
+    .table-responsive-card tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #dee2e6;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .table-responsive-card td {
+      display: block;
+      text-align: right;
+      padding: 0.75rem;
+      border: none;
+      position: relative;
+      padding-left: 50%;
+    }
+    
+    .table-responsive-card td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0.75rem;
+      width: 45%;
+      text-align: left;
+      font-weight: bold;
+    }
+    
+    .table-responsive-card td:not(:last-child) {
+      border-bottom: 1px solid #dee2e6;
+    }
+  }
+
+  /* Card styles */
+  .attendance-card {
+    transition: all 0.3s ease;
+  }
+  
+  .attendance-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  /* Progress bar styles */
+  .attendance-progress {
+    height: 20px;
+    border-radius: 10px;
+  }
+
+  .attendance-percentage {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  /* Status badge styles */
+  .status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .status-excellent {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .status-good {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .status-warning {
+    background-color: #ffc107;
+    color: black;
+  }
+
+  .status-poor {
+    background-color: #dc3545;
+    color: white;
+  }
+</style>
+{% endblock custom_css %}
+
+{% block main_content %}
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    {% if attendance_data %}
+    <div class="row">
+      <div class="col-12">
+        <!-- Overall attendance summary card -->
+        <div class="card attendance-card mb-4">
+          <div class="card-header">
+            <h3 class="card-title">Overall Attendance Summary</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 col-sm-12 mb-3">
+                <div class="info-box bg-gradient-info">
+                  <span class="info-box-icon"><i class="fas fa-calendar-check"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Average Attendance</span>
+                    <span class="info-box-number" id="average-attendance">0%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-12 mb-3">
+                <div class="info-box bg-gradient-success">
+                  <span class="info-box-icon"><i class="fas fa-book"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Total Subjects</span>
+                    <span class="info-box-number">{{ attendance_data|length }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed attendance card -->
+        <div class="card attendance-card">
+          <div class="card-header">
+            <h3 class="card-title">Attendance Details for {{ student_name }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-responsive-card">
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Total Classes</th>
+                    <th>Classes Attended</th>
+                    <th>Classes Absent</th>
+                    <th>Attendance</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for data in attendance_data %}
+                  <tr>
+                    <td data-label="Subject">{{ data.class_subject }}</td>
+                    <td data-label="Total Classes">{{ data.total_classes }}</td>
+                    <td data-label="Attended">{{ data.classes_attended }}</td>
+                    <td data-label="Absent">{{ data.classes_absent }}</td>
+                    <td data-label="Attendance">
+                      <div class="progress attendance-progress">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                             role="progressbar" 
+                             aria-valuenow="{{ data.attendance_percentage }}"
+                             aria-valuemin="0" 
+                             aria-valuemax="100"
+                             style="width: {{ data.attendance_percentage }}%">
+                          {{ data.attendance_percentage }}%
+                        </div>
+                      </div>
+                    </td>
+                    <td data-label="Status">
+                      {% if data.attendance_percentage >= 90 %}
+                        <span class="status-badge status-excellent">Excellent</span>
+                      {% elif data.attendance_percentage >= 75 %}
+                        <span class="status-badge status-good">Good</span>
+                      {% elif data.attendance_percentage >= 60 %}
+                        <span class="status-badge status-warning">Warning</span>
+                      {% else %}
+                        <span class="status-badge status-poor">Poor</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="alert alert-info">
+              <h5><i class="icon fas fa-info"></i> No Attendance Records</h5>
+              <p>No attendance records were found for your classes. If this is unexpected, please contact your instructor.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+$(document).ready(function() {
+  // Handle average attendance calculation
+  var totalPercentage = 0;
+  var subjectCount = {{ attendance_data|length|default:0 }};
+  
+  if (subjectCount > 0) {
+    {% for data in attendance_data %}
+      totalPercentage += {{ data.attendance_percentage|default:0 }};
+    {% endfor %}
+    
+    var averageAttendance = (totalPercentage / subjectCount).toFixed(1);
+    $('#average-attendance').text(averageAttendance + '%');
+  }
+});
+</script>
+{% endblock custom_js %}
